@@ -7,9 +7,10 @@
     - mobile:        image top-right, text below
     - tablet+ / wide: text left, image right
 
-  The image is pinned to a fixed 240×240 box — width/height attributes
-  plus an inline style reserve the space before the image loads, so the
-  hero contributes zero CLS.
+  The image box is always reserved before load (zero CLS): 240×240 on
+  mobile/tablet; on desktop / wide-desktop the cover becomes 25% of
+  the container content width (square padding-top box, absolutely
+  positioned img with object-fit: contain).
 
   Used by all 7 full pages (About, Artworks, Softwares, Blogs,
   Chatting, Copyright, and IndexPage sub-sections).
@@ -19,13 +20,6 @@ import { computed } from "vue";
 import { useBreakpoint } from "../../composables/useBreakpoint";
 import type { FeatureAwarePictureProps } from "../../types/app";
 import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
-
-// =========================================================================
-// Constants
-// =========================================================================
-
-/** Fixed hero image box size in px — reserved before load to prevent CLS. */
-const HERO_IMG_SIZE = 240;
 
 // =========================================================================
 // Props
@@ -58,6 +52,11 @@ defineProps<{
 
 const breakpoint = useBreakpoint();
 const isMobile = computed(() => breakpoint.value === "mobile");
+
+/** Desktop-wide breakpoints (desktop / wide-desktop) — fluid 25% cover. */
+const isDesktop = computed(
+  () => breakpoint.value === "desktop" || breakpoint.value === "wide-desktop",
+);
 </script>
 
 <template>
@@ -74,12 +73,11 @@ const isMobile = computed(() => breakpoint.value === "mobile");
         <!-- Extra content (LinkButtonGroup, GitHub link, etc.) -->
         <slot />
       </div>
-      <div class="hero-img-wrapper">
-        <FeatureAwarePicture
-          v-bind="image"
-          :width="HERO_IMG_SIZE"
-          :height="HERO_IMG_SIZE"
-        />
+      <div
+        class="hero-img-wrapper"
+        :class="{ 'hero-img-wrapper--fluid': isDesktop }"
+      >
+        <FeatureAwarePicture v-bind="image" />
       </div>
     </div>
   </div>
@@ -118,10 +116,45 @@ const isMobile = computed(() => breakpoint.value === "mobile");
   align-self: flex-end;
 }
 
-/* Fixed 240×240 image box — reserved dimensions prevent CLS */
+/* Fixed 240×240 square box (mobile / tablet) — reserved dimensions
+   prevent CLS.  max-width: 100% caps the box to the layout width for
+   extreme viewports (< 240 px). */
 .hero-img-wrapper {
   flex: 0 0 auto;
   width: 240px;
   height: 240px;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Extreme viewports (< 240 px): the box spans the layout width and
+   stays square via padding-top — here the box IS the layout width, so
+   the parent-relative percentage matches (baseline-safe). */
+@media (max-width: 240px) {
+  .hero-img-wrapper {
+    width: 100%;
+    height: auto;
+    padding-top: 100%;
+  }
+}
+
+/* Desktop / wide-desktop: the cover takes 25% of the container content
+   width — square via padding-top (baseline-safe, no CSS aspect-ratio). */
+.hero-img-wrapper--fluid {
+  flex: 0 0 25%;
+  width: 25%;
+  height: auto;
+  padding-top: 25%;
+}
+
+/* The img always fills the wrapper box (contain — no distortion), on
+   every breakpoint. */
+.hero-img-wrapper :deep(picture),
+.hero-img-wrapper :deep(img) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>

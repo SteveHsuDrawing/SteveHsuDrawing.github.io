@@ -4,10 +4,19 @@
   useMarkdownContent) via the reusable MarkdownArticle component.
 -->
 <script setup lang="ts">
+import { computed } from "vue";
 import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import MarkdownArticle from "../components/ui/MarkdownArticle.vue";
 import { useMarkdownContent } from "../composables/useMarkdownContent";
+import { isBirthdayWeek } from "../core/birthday";
+
+// =========================================================================
+// Birthday-week hero cover
+// =========================================================================
+
+/** Cover index: `worldview-1` during the birthday week, else `worldview-0`. */
+const coverIndex = computed(() => (isBirthdayWeek() ? "1" : "0"));
 
 // =========================================================================
 // Markdown content (per-language raw import, reactive to language)
@@ -23,10 +32,14 @@ const { content } = useMarkdownContent("worldview");
     :description="$t('text-worldview-description')"
     :image="{
       srcMap: {
-        avif: { light: { en: '/images/avif/covers/worldview.avif' } },
-        webp: { light: { en: '/images/webp/covers/worldview.webp' } },
+        avif: {
+          light: { en: `/images/avif/covers/worldview-${coverIndex}.avif` },
+        },
+        webp: {
+          light: { en: `/images/webp/covers/worldview-${coverIndex}.webp` },
+        },
       },
-      alt: $t('text-worldview-alt'),
+      alt: $t(`text-worldview-${coverIndex}-alt`),
       class: 'no-copy solid-bg',
     }"
   />
