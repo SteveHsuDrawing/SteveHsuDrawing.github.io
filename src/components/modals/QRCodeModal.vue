@@ -101,7 +101,7 @@ const cardTitle = computed(() => centerIconAlt.value);
 let prevUrl = "";
 
 async function generateQR(): Promise<void> {
-  if (!qrCanvas.value || url.value === prevUrl) return;
+  if (!qrCanvas.value || !url.value || url.value === prevUrl) return;
   prevUrl = url.value;
 
   const { dark, light } = qrColors.value;
@@ -123,8 +123,10 @@ watch(visible, async (v) => {
 // Re-generate on theme change.  Read CSS properties directly
 // rather than relying on the qrColors computed — getComputedStyle()
 // is not reactive and the computed cache may be stale.
+// Guard against an empty url: the modal-stack props are retired to
+// null after leaving the top, and QRCode.toCanvas throws on "".
 watch(effectiveTheme, async () => {
-  if (visible.value && qrCanvas.value) {
+  if (visible.value && qrCanvas.value && url.value) {
     await nextTick();
     const dark = cssVar("bs-body-color", "#000000");
     const light = cssVar("bs-body-bg", "#ffffff");

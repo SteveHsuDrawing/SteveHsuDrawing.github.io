@@ -134,7 +134,12 @@ function openResetWarning(): void {
       </div>
 
       <!-- New-tab toggle -->
-      <BFormCheckbox id="settings-new-tab-toggle" v-model="openInNewTab" switch>
+      <BFormCheckbox
+        id="settings-new-tab-toggle"
+        v-model="openInNewTab"
+        :unchecked-value="false"
+        switch
+      >
         {{ $t("text-always-open-external-links-in-a-new-tab") }}
       </BFormCheckbox>
 
@@ -142,6 +147,7 @@ function openResetWarning(): void {
       <BFormCheckbox
         id="settings-animations-toggle"
         v-model="enableAnimations"
+        :unchecked-value="false"
         switch
         :disabled="reducedMotion"
       >

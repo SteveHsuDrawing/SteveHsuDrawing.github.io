@@ -133,7 +133,7 @@ const AUTOPLAY_CONFIG = {
   disableOnInteraction: false,
 };
 
-/** Creative-effect config (placeholders — tune after usability test). */
+/** Creative-effect config. */
 const CREATIVE_EFFECT = {
   prev: {
     translate: [0, 0, -400],

@@ -104,46 +104,29 @@ defineExpose({ showToast });
     aria-live="polite"
     aria-atomic="true"
   >
-    <TransitionGroup name="toast-slide">
-      <BToast
-        v-for="(t, index) in toasts"
-        :key="t.id"
-        :model-value="TOAST_DURATION_MS"
-        :variant="t.type === 'error' ? 'danger' : 'success'"
-        :progress-props="{
-          variant: t.type === 'error' ? 'danger' : 'success',
-        }"
-        :class="{ 'toast-overflow': isOverflowToast(index) }"
-        solid
-        @hidden="removeToast(t.id)"
-      >
-        {{ t.message }}
-      </BToast>
-    </TransitionGroup>
+    <!-- NOTE: do NOT wrap these in <TransitionGroup>.  BToast owns an
+         internal <Transition> (v-show based); nesting another transition
+         stops its leave hooks from completing, so `hidden` never fires and
+         dismissed toasts leak (verified 2026-09-11, bootstrap-vue-next
+         1.1.0).  BToast's own fade handles the animation. -->
+    <BToast
+      v-for="(t, index) in toasts"
+      :key="t.id"
+      :model-value="TOAST_DURATION_MS"
+      :variant="t.type === 'error' ? 'danger' : 'success'"
+      :progress-props="{
+        variant: t.type === 'error' ? 'danger' : 'success',
+      }"
+      :class="{ 'toast-overflow': isOverflowToast(index) }"
+      solid
+      @hidden="removeToast(t.id)"
+    >
+      {{ t.message }}
+    </BToast>
   </div>
 </template>
 
 <style scoped>
-/* --- Toast slide-in/out transition --- */
-
-.toast-slide-enter-active {
-  transition: all 0.3s ease-out;
-}
-
-.toast-slide-leave-active {
-  transition: all 0.2s ease-in;
-}
-
-.toast-slide-enter-from {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.toast-slide-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
 /* --- Toast Tweaks  --- */
 
 /* Overflow toasts: kept in the stack (their auto-dismiss timer still runs

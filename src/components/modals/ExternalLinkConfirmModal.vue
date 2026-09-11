@@ -118,7 +118,12 @@ function showQR(): void {
       <code class="d-block p-2 flex-grow-1 user-select-all">{{ url }}</code>
     </div>
 
-    <BFormCheckbox id="ext-link-new-tab-toggle" v-model="openInNewTab" switch>
+    <BFormCheckbox
+      id="ext-link-new-tab-toggle"
+      v-model="openInNewTab"
+      :unchecked-value="false"
+      switch
+    >
       {{ $t("text-open-in-new-tab") }}
     </BFormCheckbox>
 
