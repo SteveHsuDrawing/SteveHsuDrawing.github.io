@@ -147,6 +147,15 @@ const isDesktop = computed(
   padding-top: 25%;
 }
 
+/* FeatureAwarePicture's overlay-control wrapper (emitted only when the
+   hero image opts into `showAltButton` / `previewable`) must fill the
+   reserved box as well — it becomes the positioning context for the
+   img below (and hosts the corner controls). */
+.hero-img-wrapper :deep(.feature-aware-picture) {
+  position: absolute;
+  inset: 0;
+}
+
 /* The img always fills the wrapper box (contain — no distortion), on
    every breakpoint. */
 .hero-img-wrapper :deep(picture),

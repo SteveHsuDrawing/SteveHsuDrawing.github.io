@@ -145,6 +145,8 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
         webp: { light: { en: '/images/webp/covers/blogs.webp' } },
       },
       alt: $t('text-blogs-alt'),
+      showAltButton: true,
+      previewable: true,
     }"
     :padding="false"
   >
@@ -167,6 +169,8 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
         webp: { light: { en: '/images/webp/covers/chatting.webp' } },
       },
       alt: $t('text-chatting-alt'),
+      showAltButton: true,
+      previewable: true,
     }"
     :padding="false"
   >

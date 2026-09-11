@@ -34,6 +34,8 @@ const { groups, pagePath } = useLinkCards(ref("artworks-and-videos"));
       },
       feature: ['follow-theme'],
       alt: $t('text-artworks-alt'),
+      showAltButton: true,
+      previewable: true,
       class: 'no-copy solid-bg',
     }"
   />

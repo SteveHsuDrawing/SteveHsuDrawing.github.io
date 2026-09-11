@@ -26,6 +26,8 @@ import copyrightMd from "../../public/images/README.md?raw";
         webp: { light: { en: '/images/webp/covers/about.webp' } },
       },
       alt: $t('text-about-alt'),
+      showAltButton: true,
+      previewable: true,
       class: 'no-copy solid-bg',
     }"
   />

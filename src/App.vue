@@ -25,6 +25,7 @@ import { SHOW_TOAST_KEY } from "./composables/useToast";
 import SkipButton from "./components/buttons/SkipButton.vue";
 import ExternalLinkConfirmModal from "./components/modals/ExternalLinkConfirmModal.vue";
 import GitHubEventsModal from "./components/modals/GitHubEventsModal.vue";
+import PictureGroupViewerModal from "./components/modals/PictureGroupViewerModal.vue";
 import PictureViewerModal from "./components/modals/PictureViewerModal.vue";
 import QRCodeModal from "./components/modals/QRCodeModal.vue";
 import ResetWarningModal from "./components/modals/ResetWarningModal.vue";
@@ -102,7 +103,25 @@ usePageNavigation(router, loadingBarRef, t);
 
 // ---- Modal stack (all modals coordinate through the shared stack) ----
 
-const { push } = useModalStack();
+const { push, stack, clear } = useModalStack();
+
+// ---- Leaving a page dismisses any open picture viewer ----
+// The group viewer's query params are gone on the destination route and
+// the single viewer carries no URL state at all, so a viewer left over a
+// navigation would otherwise keep covering the destination page.  Only
+// PATH changes count — `?preview=` / `?picGroupId=` navigations must not
+// close it.  This replaces GalleryPage's former onBeforeUnmount hook.
+
+watch(
+  () => route.path,
+  () => {
+    const viewerOpen = stack.value.some(
+      (item) =>
+        item.id === "picture-viewer" || item.id === "picture-group-viewer",
+    );
+    if (viewerOpen) clear();
+  },
+);
 
 // ---- Toast injection ----
 
@@ -247,6 +266,7 @@ onMounted(async () => {
   <QRCodeModal />
   <ResetWarningModal />
   <GitHubEventsModal />
+  <PictureGroupViewerModal />
   <PictureViewerModal />
   <StickerModal />
   <ToastStack ref="toastStackRef" />

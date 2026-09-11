@@ -10,12 +10,21 @@
 
   Colored (CSS mask) rendering is handled by the separate ColoredImg
   component.  This component does NOT output data-img-feature.
+
+  Overlay controls (opt-in): with `showAltButton` and/or `previewable`
+  the component wraps the image in a positioned box and adds corner
+  controls on the bottom edge — an ALT button opening a BPopover with
+  the image description, and a preview button opening the single-image
+  viewer.  Without those flags the rendered DOM is unchanged (a bare
+  <picture> / <img> root) — every legacy consumer relies on that.
 -->
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "../../composables/useI18n";
+import { usePictureViewer } from "../../composables/usePictureViewer";
 import { useTheme } from "../../composables/useTheme";
 import { resolveLanguageAwareString } from "../../core/utils";
+import { isImageEdgeDark } from "../../platform/image-luminance";
 import type {
   FeatureAwarePictureProps,
   Lang,
@@ -33,10 +42,39 @@ const props = defineProps<FeatureAwarePictureProps>();
 // =========================================================================
 
 const { effectiveTheme } = useTheme();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
+const { openPictureViewer } = usePictureViewer();
 
 const loaded = ref(false);
 const imgRef = ref<HTMLImageElement>();
+
+// -------------------------------------------------------------------------
+// Overlay controls (ALT / preview) — opt-in via props
+// -------------------------------------------------------------------------
+
+/** ALT corner button — only when requested AND an alt text exists. */
+const hasAltButton = computed(() => !!props.showAltButton && !!props.alt);
+
+/** Whether the positioned wrapper + overlay controls are rendered. */
+const hasOverlayControls = computed(
+  () => hasAltButton.value || !!props.previewable,
+);
+
+/** Bottom-edge luminance of the current source (`null` while unknown). */
+const bottomDark = ref<boolean | null>(null);
+
+/**
+ * Palette class for the overlay controls — the shared on-image palette
+ * (`src/stylesheets/on-image-controls.css`), also used by the Carousel
+ * and the picture viewers.
+ */
+const overlayPaletteClass = computed(() =>
+  bottomDark.value === true
+    ? "controls-on-image-dark"
+    : bottomDark.value === false
+      ? "controls-on-image-light"
+      : "",
+);
 
 // -------------------------------------------------------------------------
 // Feature checks
@@ -146,22 +184,76 @@ function onError(): void {
   loaded.value = true;
 }
 
+/**
+ * Sample the bottom 5 % band of the current source — the corner
+ * controls sit on the bottom edge.  Skipped entirely while no overlay
+ * control is rendered (the platform service also caches per src).
+ */
+function sampleBottomLuminance(): void {
+  if (!hasOverlayControls.value) return;
+  const img = imgRef.value;
+  const src = img?.currentSrc || img?.src;
+  if (!src) return;
+  void isImageEdgeDark(src, { edge: "bottom", ratio: 0.05 }).then((dark) => {
+    bottomDark.value = dark;
+  });
+}
+
+/** Preview button click — open the single-image viewer with these props. */
+function onPreviewClick(): void {
+  openPictureViewer({ ...props });
+}
+
 onMounted(() => {
   if (imgRef.value?.complete && imgRef.value.naturalWidth > 0) {
     loaded.value = true;
   }
+  sampleBottomLuminance();
+});
+
+// Re-sample when the resolved source changes (theme / language switch).
+watch([resolvedImgSrc, resolvedAvifSrc], () => {
+  bottomDark.value = null;
+  sampleBottomLuminance();
 });
 </script>
 
 <template>
-  <!-- With AVIF: full <picture> -->
-  <picture v-if="renderPicture">
-    <source
-      type="image/avif"
-      :srcset="resolvedAvifSrc"
-      :fetchpriority="fetchpriority"
-    />
+  <!--
+    With overlay controls: positioned wrapper + bottom-edge controls.
+    The image markup below is intentionally repeated in the v-else
+    branch so legacy consumers keep a bare <picture> / <img> root.
+  -->
+  <div v-if="hasOverlayControls" class="feature-aware-picture">
+    <picture v-if="renderPicture">
+      <source
+        type="image/avif"
+        :srcset="resolvedAvifSrc"
+        :fetchpriority="fetchpriority"
+      />
+      <img
+        ref="imgRef"
+        :src="resolvedImgSrc"
+        :alt="alt"
+        :width="width"
+        :height="height"
+        :style="{
+          width: width,
+          height: height,
+          aspectRatio:
+            aspectRatio !== undefined ? String(aspectRatio) : undefined,
+        }"
+        :class="imgClass"
+        :loading="loading"
+        :fetchpriority="fetchpriority"
+        :data-img-loaded="loaded ? '' : undefined"
+        @load="onLoad"
+        @error="onError"
+      />
+    </picture>
+
     <img
+      v-else
       ref="imgRef"
       :src="resolvedImgSrc"
       :alt="alt"
@@ -180,28 +272,92 @@ onMounted(() => {
       @load="onLoad"
       @error="onError"
     />
-  </picture>
 
-  <!-- No AVIF: bare <img> -->
-  <img
-    v-else
-    ref="imgRef"
-    :src="resolvedImgSrc"
-    :alt="alt"
-    :width="width"
-    :height="height"
-    :style="{
-      width: width,
-      height: height,
-      aspectRatio: aspectRatio !== undefined ? String(aspectRatio) : undefined,
-    }"
-    :class="imgClass"
-    :loading="loading"
-    :fetchpriority="fetchpriority"
-    :data-img-loaded="loaded ? '' : undefined"
-    @load="onLoad"
-    @error="onError"
-  />
+    <!-- ==== Overlay controls: ALT (left) + preview (right) ==== -->
+    <div class="picture-overlay-controls" :class="overlayPaletteClass">
+      <BPopover
+        v-if="hasAltButton"
+        :title="t('text-image-description')"
+        placement="top"
+        click
+        lazy
+        teleport-to="body"
+      >
+        <template #target>
+          <button
+            type="button"
+            class="picture-overlay-btn picture-overlay-btn-alt"
+            :aria-label="t('text-image-description')"
+          >
+            ALT
+          </button>
+        </template>
+        {{ alt }}
+      </BPopover>
+      <button
+        v-if="previewable"
+        type="button"
+        class="picture-overlay-btn picture-overlay-btn-preview"
+        :aria-label="t('text-image-preview')"
+        @click="onPreviewClick"
+      >
+        <i class="bi bi-zoom-in" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Legacy: bare root (no wrapper) — see the component header -->
+  <template v-else>
+    <!-- With AVIF: full <picture> -->
+    <picture v-if="renderPicture">
+      <source
+        type="image/avif"
+        :srcset="resolvedAvifSrc"
+        :fetchpriority="fetchpriority"
+      />
+      <img
+        ref="imgRef"
+        :src="resolvedImgSrc"
+        :alt="alt"
+        :width="width"
+        :height="height"
+        :style="{
+          width: width,
+          height: height,
+          aspectRatio:
+            aspectRatio !== undefined ? String(aspectRatio) : undefined,
+        }"
+        :class="imgClass"
+        :loading="loading"
+        :fetchpriority="fetchpriority"
+        :data-img-loaded="loaded ? '' : undefined"
+        @load="onLoad"
+        @error="onError"
+      />
+    </picture>
+
+    <!-- No AVIF: bare <img> -->
+    <img
+      v-else
+      ref="imgRef"
+      :src="resolvedImgSrc"
+      :alt="alt"
+      :width="width"
+      :height="height"
+      :style="{
+        width: width,
+        height: height,
+        aspectRatio:
+          aspectRatio !== undefined ? String(aspectRatio) : undefined,
+      }"
+      :class="imgClass"
+      :loading="loading"
+      :fetchpriority="fetchpriority"
+      :data-img-loaded="loaded ? '' : undefined"
+      @load="onLoad"
+      @error="onError"
+    />
+  </template>
 </template>
 
 <style scoped>
@@ -216,6 +372,83 @@ img {
 img[data-img-loaded] {
   opacity: 1;
   cursor: inherit;
+}
+
+/* ==== Overlay controls (ALT + preview corners) ==== */
+
+/* Positioning context for the corner controls — emitted only when an
+   overlay control is requested (see the component header). */
+.feature-aware-picture {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Full-area layer: keeps every control anchored to the image corners
+   whatever element the popover trigger renders in between. */
+.picture-overlay-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Corner buttons: collapsed to a point, growing diagonally out of their
+   own corner in 0.1 s (same visual language as the Carousel controls).
+   The `transform` transition replaces width/height because the ALT
+   button's width follows its label and cannot animate from 0. */
+.picture-overlay-btn {
+  position: absolute;
+  bottom: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  padding: 0 0.375rem;
+  border: 0;
+  border-radius: var(--bs-border-radius);
+  background: var(--shlh-on-image-bar-bg, rgba(var(--bs-body-color-rgb), 0.15));
+  color: var(--shlh-on-image-control-color, var(--bs-body-color));
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(0.5rem);
+  transform: scale(0);
+  transition: transform 0.1s ease;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.picture-overlay-btn-alt {
+  left: 1px;
+  transform-origin: left bottom;
+}
+
+.picture-overlay-btn-preview {
+  right: 1px;
+  width: 1.5rem;
+  padding: 0;
+  transform-origin: right bottom;
+}
+
+/* Reveal: pointer modality via wrapper hover / focus; the touch and
+   keyboard modalities keep the controls visible (input-modality
+   classes on <html>). */
+.feature-aware-picture:hover .picture-overlay-btn,
+.feature-aware-picture:focus-within .picture-overlay-btn,
+html.user-input-touch .picture-overlay-btn,
+html.user-input-keyboard .picture-overlay-btn {
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* Same interaction feedback as the Carousel controls (palette contract:
+   pure #000/#fff, so a pixel invert reads as an inverted pill). */
+.picture-overlay-btn:hover,
+.picture-overlay-btn:active,
+.picture-overlay-btn:focus-visible {
+  filter: invert(1);
 }
 
 /* --- Image placeholder (reserved-space reservation + shimmer) ---

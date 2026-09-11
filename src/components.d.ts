@@ -16,6 +16,7 @@ declare module 'vue' {
     BFormCheckbox: typeof import('bootstrap-vue-next/components/BFormCheckbox')['BFormCheckbox']
     BModal: typeof import('bootstrap-vue-next/components/BModal')['BModal']
     BOffcanvas: typeof import('bootstrap-vue-next/components/BOffcanvas')['BOffcanvas']
+    BPopover: typeof import('bootstrap-vue-next/components/BPopover')['BPopover']
     BToast: typeof import('bootstrap-vue-next/components/BToast')['BToast']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -40,6 +40,8 @@ const { content } = useMarkdownContent("worldview");
         },
       },
       alt: $t(`text-worldview-${coverIndex}-alt`),
+      showAltButton: true,
+      previewable: true,
       class: 'no-copy solid-bg',
     }"
   />

@@ -258,6 +258,18 @@ export interface FeatureAwarePictureProps {
   fetchpriority?: "high" | "low" | "auto";
   /** Native lazy loading. */
   loading?: "lazy" | "eager";
+  /**
+   * Render the overlay ALT button at the bottom-left corner.  The button
+   * opens a popover showing this image's `alt` text as the description;
+   * it is only rendered when `alt` is non-empty.
+   */
+  showAltButton?: boolean;
+  /**
+   * Render the overlay preview button at the bottom-right corner.  Only
+   * the button triggers the preview — the image itself stays inert; the
+   * click opens the single-image viewer with these props.
+   */
+  previewable?: boolean;
 }
 
 // -------------------------------------------------------------------------
@@ -428,8 +440,8 @@ export interface GitHubEventsModalProps {
   events: GitHubEvent[];
 }
 
-/** Props for PictureViewerModal — stored in a modal-stack item. */
-export interface PictureViewerModalProps {
+/** Props for PictureGroupViewerModal — stored in a modal-stack item. */
+export interface PictureGroupViewerModalProps {
   /**
    * The group's pictures — the viewer navigates within this list
    * (prev/next, keyboard arrows, touch swipe).
@@ -439,11 +451,34 @@ export interface PictureViewerModalProps {
   currentId: string;
 }
 
+/** Props for PictureViewerModal (single-image mode) — modal-stack item. */
+export interface PictureViewerModalProps {
+  /**
+   * Display props of the single picture to show.  The stage owns the
+   * rendered size and styling: `class` / `aspectRatio` / `width` /
+   * `height` are stripped by the viewer before rendering.
+   */
+  img: FeatureAwarePictureProps;
+  /**
+   * Resolved header title (the composable defaults it to
+   * `t("text-image-preview")`); the viewer falls back to the same key
+   * when it is missing.
+   */
+  title?: string;
+}
+
+/** Options for `openPictureViewer()` (single-image viewer). */
+export interface PictureViewerOptions {
+  /** Header title — defaults to `t("text-image-preview")`. */
+  title?: string;
+}
+
 /** Modal component identifiers in the modal stack. */
 export type ModalId =
   | "external-link"
   | "qr-code"
   | "github-events"
+  | "picture-group-viewer"
   | "picture-viewer"
   | "settings"
   | "reset-warning"
@@ -458,6 +493,7 @@ export type ModalStackItem =
   | { id: "external-link"; props: ExternalLinkConfirmModalProps }
   | { id: "qr-code"; props: QRCodeModalProps }
   | { id: "github-events"; props: GitHubEventsModalProps }
+  | { id: "picture-group-viewer"; props: PictureGroupViewerModalProps }
   | { id: "picture-viewer"; props: PictureViewerModalProps }
   | { id: "settings"; props: null }
   | { id: "reset-warning"; props: null }
