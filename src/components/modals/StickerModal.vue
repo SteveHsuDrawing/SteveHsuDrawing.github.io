@@ -86,6 +86,7 @@ const message = computed(() => t("text-sticker-message-observing"));
         :alt="stickerAlt"
         :width="150"
         :height="150"
+        show-alt-button
         class="no-copy solid-bg"
       />
       <p class="sticker-modal-message">{{ message }}</p>

@@ -407,13 +407,18 @@ img[data-img-loaded] {
   padding: 0 0.375rem;
   border: 0;
   border-radius: var(--bs-border-radius);
-  background: var(--shlh-on-image-bar-bg, rgba(var(--bs-body-color-rgb), 0.15));
-  color: var(--shlh-on-image-control-color, var(--bs-body-color));
+  /* OPAQUE palette (no translucency, no backdrop blur): the label keeps
+     a constant high contrast on any image, and the hover `invert(1)`
+     below becomes a clean black<->white swap.  `#000` / `#fff` is the
+     pre-sampling fallback (luminance still unknown) — deliberately NOT a
+     theme colour, which would vanish over a bright cover in the light
+     theme. */
+  background: var(--shlh-on-image-control-bg, #000);
+  color: var(--shlh-on-image-control-color, #fff);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.02em;
-  backdrop-filter: blur(0.5rem);
   transform: scale(0);
   transition: transform 0.1s ease;
   pointer-events: none;
@@ -443,8 +448,8 @@ html.user-input-keyboard .picture-overlay-btn {
   pointer-events: auto;
 }
 
-/* Same interaction feedback as the Carousel controls (palette contract:
-   pure #000/#fff, so a pixel invert reads as an inverted pill). */
+/* Interaction feedback: the pill is opaque and the palette contract is
+   pure #000/#fff, so this flip lands on the opposite pure colour. */
 .picture-overlay-btn:hover,
 .picture-overlay-btn:active,
 .picture-overlay-btn:focus-visible {

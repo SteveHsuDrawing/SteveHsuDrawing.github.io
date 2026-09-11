@@ -39,6 +39,7 @@ const i18nKey = computed(() => `text-sticker-of-${props.stickerId}-alt`);
         :alt="$t(i18nKey)"
         :width="150"
         :height="150"
+        show-alt-button
         class="no-copy solid-bg"
       />
       <p v-if="caption" class="opacity-75 mt-3">

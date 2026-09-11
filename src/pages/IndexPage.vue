@@ -113,6 +113,8 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
               webp: { light: { en: '/images/webp/covers/projects.webp' } },
             }"
             :alt="$t('text-projects-alt')"
+            show-alt-button
+            previewable
           />
         </div>
       </div>
@@ -210,6 +212,11 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
   padding-top: 100%;
 }
 
+/* Every selector here keeps the `>` combinator ON PURPOSE: a descendant
+   `.hero-cover-box picture` would also match the <picture> elements
+   INSIDE the carousel slides and collapse every `.carousel-item` to zero
+   height (the whole carousel disappears). */
+
 .hero-cover-box > picture,
 .hero-cover-box > img {
   position: absolute;
@@ -221,6 +228,35 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
 
 .hero-cover-box > picture > img,
 .hero-cover-box > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* FeatureAwarePicture with overlay controls (showAltButton /
+   previewable) wraps the picture in `.feature-aware-picture`: the
+   wrapper takes the box, its own picture / img take the wrapper, and the
+   img keeps the 1:1 `cover` crop — the ALT / preview buttons then sit on
+   the box corners. */
+.hero-cover-box > .feature-aware-picture {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hero-cover-box > .feature-aware-picture > picture,
+.hero-cover-box > .feature-aware-picture > img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hero-cover-box > .feature-aware-picture > picture > img,
+.hero-cover-box > .feature-aware-picture > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
