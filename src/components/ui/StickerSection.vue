@@ -7,7 +7,9 @@
   `createStickerSrcMap()` (shared with StickerModal):
     AVIF: /images/avif/stickers/{light|dark}/{stickerId}.avif
     WebP: /images/webp/stickers/{light|dark}/{stickerId}.webp
-  Alt text uses i18n key `text-sticker-of-{stickerId}-alt`.
+  Alt / title text uses the i18n keys `text-sticker-{stickerId}-alt` and
+  `text-sticker-{stickerId}-title` (the latter becomes the ALT popover
+  header).
 -->
 <script setup lang="ts">
 import { computed } from "vue";
@@ -27,7 +29,10 @@ const props = defineProps<StickerProps>();
 
 const stickerSrcMap = computed(() => createStickerSrcMap(props.stickerId));
 
-const i18nKey = computed(() => `text-sticker-of-${props.stickerId}-alt`);
+const i18nKey = computed(() => `text-sticker-${props.stickerId}-alt`);
+
+/** ALT popover header key — the sticker's title. */
+const titleKey = computed(() => `text-sticker-${props.stickerId}-title`);
 </script>
 
 <template>
@@ -37,6 +42,7 @@ const i18nKey = computed(() => `text-sticker-of-${props.stickerId}-alt`);
         :src-map="stickerSrcMap"
         :feature="['follow-theme']"
         :alt="$t(i18nKey)"
+        :title="$t(titleKey)"
         :width="150"
         :height="150"
         show-alt-button

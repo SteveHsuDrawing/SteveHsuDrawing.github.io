@@ -61,10 +61,13 @@ function onShown(): void {
 const stickerSrcMap = computed(() => createStickerSrcMap(STICKER_ID));
 
 /** Alt text for the sticker. */
-const stickerAlt = computed(() => t(`text-sticker-of-${STICKER_ID}-alt`));
+const stickerAlt = computed(() => t(`text-sticker-${STICKER_ID}-alt`));
+
+/** Title for the ALT popover header. */
+const stickerTitle = computed(() => t(`text-sticker-${STICKER_ID}-title`));
 
 /** Short line shown below the sticker. */
-const message = computed(() => t("text-sticker-message-observing"));
+const message = computed(() => t(`text-sticker-${STICKER_ID}-message`));
 </script>
 
 <template>
@@ -84,6 +87,7 @@ const message = computed(() => t("text-sticker-message-observing"));
         :src-map="stickerSrcMap"
         :feature="['follow-theme']"
         :alt="stickerAlt"
+        :title="stickerTitle"
         :width="150"
         :height="150"
         show-alt-button

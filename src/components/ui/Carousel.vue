@@ -8,11 +8,15 @@
     - Config-driven slides from `src/configs/picture-list/index.json`
       (group id `carousel-illustration`)
     - One controls group: play/pause + per-slide countdown bars +
-      related-link button (expanded on hover / always for keyboard+touch)
+      preview button (expanded on hover / always for keyboard+touch) —
+      the preview opens the single-image lightbox, where the ALT
+      description and the slide's related link live
     - Adaptive control color from the active image's edge luminance
 
   Unsupported browsers (Swiper v14 baseline, see isSwiperSupported) and
-  no-JS environments get a static first-slide fallback.
+  no-JS environments get a static first-slide fallback — a single
+  FeatureAwarePicture carrying the picture's own overlay controls (ALT +
+  preview) and its `relatedLink`.
 -->
 <script setup lang="ts">
 import "swiper/css";
@@ -26,11 +30,15 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { computed, nextTick, ref, shallowRef, watch } from "vue";
 import { useI18n } from "../../composables/useI18n";
 import { usePictureList } from "../../composables/usePictureList";
+import { usePictureViewer } from "../../composables/usePictureViewer";
 import { useTheme } from "../../composables/useTheme";
 import { isSwiperSupported } from "../../platform/advanced-feat-support";
 import { isImageEdgeDark } from "../../platform/image-luminance";
+import type {
+  DisplayPictureData,
+  FeatureAwarePictureProps,
+} from "../../types/app";
 import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
-import TypeAwareLink from "../links/TypeAwareLink.vue";
 
 // =========================================================================
 // State
@@ -102,6 +110,7 @@ watch(
 
 const { t } = useI18n();
 const { effectiveTheme } = useTheme();
+const { openPictureViewer } = usePictureViewer();
 
 // -------------------------------------------------------------------------
 // Config-driven slides (picture-list, group `carousel-illustration`)
@@ -117,8 +126,19 @@ const slides = computed(
 /** Slide currently active (loop maps activeIndex → realIndex). */
 const currentSlide = computed(() => slides.value[activeIndex.value] ?? null);
 
-/** Related link of the active slide (used by the controls group). */
-const currentLink = computed(() => currentSlide.value?.relatedLink ?? null);
+/**
+ * Display props of ONE slide for the single-image lightbox — the
+ * config's own props plus the id-derived fallbacks (the JSON carries no
+ * `alt` / `title`), so the lightbox can show the slide title and its ALT
+ * description, and render the slide's `relatedLink` in its footer.
+ */
+function previewPropsOf(slide: DisplayPictureData): FeatureAwarePictureProps {
+  return {
+    ...slide.pictureProps,
+    alt: slide.pictureProps.alt ?? t(`text-${slide.id}-alt`),
+    title: slide.pictureProps.title || t(`text-${slide.id}-title`),
+  };
+}
 
 // -------------------------------------------------------------------------
 // Swiper params (static — created once per component instance)
@@ -228,6 +248,16 @@ function onPointerLeave(event: PointerEvent): void {
 /** Jump to a slide via its real index (loop-safe). */
 function goToSlide(index: number): void {
   swiper.value?.slideToLoop(index);
+}
+
+/**
+ * Preview click — open the single-image lightbox for one slide (the
+ * active slide from the controls group, the first slide from the static
+ * fallback branch).
+ */
+function onPreviewClick(slide: DisplayPictureData | null | undefined): void {
+  if (!slide) return;
+  openPictureViewer(previewPropsOf(slide));
 }
 
 /**
@@ -361,7 +391,7 @@ watch(effectiveTheme, () => {
       </SwiperSlide>
     </Swiper>
 
-    <!-- ==== Controls group (play/pause + bars + related link) ==== -->
+    <!-- ==== Controls group (play/pause + bars + preview) ==== -->
     <div class="carousel-controls">
       <button
         type="button"
@@ -396,15 +426,14 @@ watch(effectiveTheme, () => {
         </button>
       </div>
 
-      <TypeAwareLink
-        v-if="currentLink"
-        v-bind="currentLink"
-        hide-indicator
-        class="carousel-related-link"
-        :aria-label="t('text-open-related-page')"
+      <button
+        type="button"
+        class="carousel-preview-btn"
+        :aria-label="t('text-image-preview')"
+        @click="onPreviewClick(currentSlide)"
       >
-        <i class="bi bi-link-45deg" aria-hidden="true"></i>
-      </TypeAwareLink>
+        <i class="bi bi-zoom-in" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
@@ -412,19 +441,11 @@ watch(effectiveTheme, () => {
   <div v-else class="illustration-carousel illustration-carousel-static">
     <template v-if="slides[0]">
       <FeatureAwarePicture
-        v-bind="slides[0].pictureProps"
-        :alt="slides[0].pictureProps.alt ?? t(`text-${slides[0].id}-alt`)"
+        v-bind="previewPropsOf(slides[0])"
+        show-alt-button
+        previewable
         class="d-block w-100 h-100 no-copy solid-bg"
       />
-      <TypeAwareLink
-        v-if="slides[0].relatedLink"
-        v-bind="slides[0].relatedLink"
-        hide-indicator
-        class="carousel-related-link"
-        :aria-label="t('text-open-related-page')"
-      >
-        <i class="bi bi-link-45deg" aria-hidden="true"></i>
-      </TypeAwareLink>
     </template>
   </div>
 </template>
@@ -448,7 +469,7 @@ watch(effectiveTheme, () => {
    picture viewer fallback arrows).  Pure #000/#fff contract — see that
    file. */
 
-/* --- Controls group (play/pause + bars + related link) --- */
+/* --- Controls group (play/pause + bars + preview) --- */
 
 /* Bottom-anchored, SINGLE animation source: the group itself animates
    height 0.25rem → 1.5rem (grows upward from the 1px bottom line); bars
@@ -469,7 +490,7 @@ watch(effectiveTheme, () => {
 /* End buttons: 0.25rem collapsed squares (same look as the bar track),
    growing from their corners to 1.5rem on expand. */
 .carousel-play-toggle,
-.carousel-related-link {
+.carousel-preview-btn {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
@@ -498,14 +519,14 @@ watch(effectiveTheme, () => {
   transform-origin: left bottom;
 }
 
-.carousel-related-link {
+.carousel-preview-btn {
   transform-origin: right bottom;
 }
 
 /* Icon hidden while collapsed; fades in on expand (opacity set in the
    expanded-state rules). */
 .carousel-play-toggle > i,
-.carousel-related-link > i {
+.carousel-preview-btn > i {
   opacity: 0;
   transition: opacity 0.1s ease;
 }
@@ -515,9 +536,9 @@ watch(effectiveTheme, () => {
 .carousel-play-toggle:hover,
 .carousel-play-toggle:active,
 .carousel-play-toggle:focus-visible,
-.carousel-related-link:hover,
-.carousel-related-link:active,
-.carousel-related-link:focus-visible {
+.carousel-preview-btn:hover,
+.carousel-preview-btn:active,
+.carousel-preview-btn:focus-visible {
   filter: invert(1);
 }
 
@@ -613,14 +634,14 @@ watch(effectiveTheme, () => {
 }
 
 .illustration-carousel:hover .carousel-play-toggle,
-.illustration-carousel:hover .carousel-related-link {
+.illustration-carousel:hover .carousel-preview-btn {
   width: 1.5rem;
   pointer-events: auto;
   background: var(--shlh-on-image-control-bg);
 }
 
 .illustration-carousel:hover .carousel-play-toggle > i,
-.illustration-carousel:hover .carousel-related-link > i {
+.illustration-carousel:hover .carousel-preview-btn > i {
   opacity: 1;
 }
 
@@ -629,14 +650,14 @@ html.user-input-keyboard .illustration-carousel .carousel-controls {
 }
 
 html.user-input-keyboard .illustration-carousel .carousel-play-toggle,
-html.user-input-keyboard .illustration-carousel .carousel-related-link {
+html.user-input-keyboard .illustration-carousel .carousel-preview-btn {
   width: 1.5rem;
   pointer-events: auto;
   background: var(--shlh-on-image-control-bg);
 }
 
 html.user-input-keyboard .illustration-carousel .carousel-play-toggle > i,
-html.user-input-keyboard .illustration-carousel .carousel-related-link > i {
+html.user-input-keyboard .illustration-carousel .carousel-preview-btn > i {
   opacity: 1;
 }
 
@@ -646,32 +667,38 @@ html.user-input-keyboard .illustration-carousel .carousel-related-link > i {
   }
 
   .illustration-carousel .carousel-play-toggle,
-  .illustration-carousel .carousel-related-link {
+  .illustration-carousel .carousel-preview-btn {
     width: 1.5rem;
     pointer-events: auto;
     background: var(--shlh-on-image-control-bg);
   }
 
   .illustration-carousel .carousel-play-toggle > i,
-  .illustration-carousel .carousel-related-link > i {
+  .illustration-carousel .carousel-preview-btn > i {
     opacity: 1;
   }
 }
 
-/* --- Static fallback related-link: always visible (1.5rem square) --- */
+/* --- Static fallback: wrapper-aware sizing (the v3.14.2 hero pattern) --- */
+/* With the overlay controls the picture is wrapped in
+   `.feature-aware-picture` (inline-block, auto height), so the img's
+   `h-100` loses its definite basis.  The wrapper chain is therefore
+   pinned to the box and the img fills it with `object-fit: cover`.
+   `>` combinators only — a descendant selector would also match the
+   <picture> elements inside the Swiper slides. */
 
-.illustration-carousel-static .carousel-related-link {
+.illustration-carousel-static > .feature-aware-picture,
+.illustration-carousel-static > .feature-aware-picture > picture,
+.illustration-carousel-static > .feature-aware-picture > img {
   position: absolute;
-  bottom: 1px;
-  right: 1px;
-  width: 1.5rem;
-  height: 1.5rem;
-  pointer-events: auto;
-  background: var(--shlh-on-image-control-bg);
+  inset: 0;
 }
 
-.illustration-carousel-static .carousel-related-link > i {
-  opacity: 1;
+.illustration-carousel-static > .feature-aware-picture > picture > img,
+.illustration-carousel-static > .feature-aware-picture > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* --- Reduced motion: neutralize transform transitions --- */

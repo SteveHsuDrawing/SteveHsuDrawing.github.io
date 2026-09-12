@@ -24,16 +24,16 @@
             }
           },
           "feature": ["follow-theme"],
-          "fetchpriority": "high"
-        },
-        "relatedLink": {
-          "type": "external",
-          "href": "https://www.pixiv.net/artworks/145641748",
-          "icon": {
-            "type": "picture",
-            "imgProps": {
-              "src": "/images/webp/icons/pixiv.webp",
-              "alt": "Pixiv"
+          "fetchpriority": "high",
+          "relatedLink": {
+            "type": "external",
+            "href": "https://www.pixiv.net/artworks/145641748",
+            "icon": {
+              "type": "picture",
+              "imgProps": {
+                "src": "/images/webp/icons/pixiv.webp",
+                "alt": "Pixiv"
+              }
             }
           }
         }
@@ -53,16 +53,17 @@
               }
             }
           },
-          "loading": "lazy"
-        },
-        "relatedLink": {
-          "type": "external",
-          "href": "https://www.pixiv.net/artworks/144184773",
-          "icon": {
-            "type": "picture",
-            "imgProps": {
-              "src": "/images/webp/icons/pixiv.webp",
-              "alt": "Pixiv"
+          "loading": "lazy",
+          "title": "SELF",
+          "relatedLink": {
+            "type": "external",
+            "href": "https://www.pixiv.net/artworks/144184773",
+            "icon": {
+              "type": "picture",
+              "imgProps": {
+                "src": "/images/webp/icons/pixiv.webp",
+                "alt": "Pixiv"
+              }
             }
           }
         }
@@ -82,11 +83,11 @@
               }
             }
           },
-          "loading": "lazy"
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-1-vol-1"
+          "loading": "lazy",
+          "relatedLink": {
+            "type": "internal",
+            "href": "/gallery.html?preview=sticker-collection-series-1-vol-1"
+          }
         }
       },
       {
@@ -104,11 +105,11 @@
               }
             }
           },
-          "loading": "lazy"
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-2-vol-2"
+          "loading": "lazy",
+          "relatedLink": {
+            "type": "internal",
+            "href": "/gallery.html?preview=sticker-collection-series-2-vol-2"
+          }
         }
       }
     ]

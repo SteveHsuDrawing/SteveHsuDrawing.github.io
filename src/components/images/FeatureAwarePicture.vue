@@ -14,9 +14,12 @@
   Overlay controls (opt-in): with `showAltButton` and/or `previewable`
   the component wraps the image in a positioned box and adds corner
   controls on the bottom edge — an ALT button opening a BPopover with
+  the picture title (falling back to the generic description label) and
   the image description, and a preview button opening the single-image
   viewer.  Without those flags the rendered DOM is unchanged (a bare
   <picture> / <img> root) — every legacy consumer relies on that.
+  `message` / `relatedLink` are carried for the lightboxes only; this
+  component renders neither.
 -->
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
@@ -54,6 +57,14 @@ const imgRef = ref<HTMLImageElement>();
 
 /** ALT corner button — only when requested AND an alt text exists. */
 const hasAltButton = computed(() => !!props.showAltButton && !!props.alt);
+
+/**
+ * ALT popover header — the picture title, or the generic description
+ * label when none was passed.  An empty title falls back too: the i18n
+ * resolver returns "" for a missing key, and `||` (never `??`) is what
+ * turns that into the default.
+ */
+const popoverTitle = computed(() => props.title || t("text-image-description"));
 
 /** Whether the positioned wrapper + overlay controls are rendered. */
 const hasOverlayControls = computed(
@@ -277,7 +288,7 @@ watch([resolvedImgSrc, resolvedAvifSrc], () => {
     <div class="picture-overlay-controls" :class="overlayPaletteClass">
       <BPopover
         v-if="hasAltButton"
-        :title="t('text-image-description')"
+        :title="popoverTitle"
         placement="top"
         click
         lazy

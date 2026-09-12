@@ -156,6 +156,7 @@ function onSelect(picture: DisplayPictureData): void {
       },
       feature: ['follow-theme'],
       alt: $t('text-artworks-alt'),
+      title: $t('text-artworks-title'),
       showAltButton: true,
       previewable: true,
       class: 'no-copy solid-bg',

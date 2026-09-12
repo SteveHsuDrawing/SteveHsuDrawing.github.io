@@ -122,7 +122,7 @@ const hintsVisible = computed(() =>
 // Per-picture display props (single source of truth is `contents`)
 // -------------------------------------------------------------------------
 
-/** Poster props for one picture (alt falls back to t("text-" + id)). */
+/** Poster props for one picture (title / alt fall back to `<id>-title` / `-alt`). */
 function picturePropsOf(p: DisplayPictureData): FeatureAwarePictureProps {
   // `aspectRatio` is a card-layer loading placeholder — the viewer
   // stage owns the displayed size (max-width: 72% + height: 100% +
@@ -130,6 +130,7 @@ function picturePropsOf(p: DisplayPictureData): FeatureAwarePictureProps {
   const { aspectRatio: _ignored, ...rest } = p.pictureProps;
   return {
     ...rest,
+    title: p.pictureProps.title || t(`text-${p.id}-title`),
     alt: p.pictureProps.alt ?? t("text-" + p.id + "-alt"),
     // ALT button on the ACTIVE slide only — the side slides are partially
     // visible click affordances and four floating buttons would be noise.
@@ -231,9 +232,11 @@ watch(
   { immediate: true },
 );
 
-/** Description shown in the chrome bar. */
+/** Picture title shown in the chrome bar (config value, else `<id>-title`). */
 const title = computed(() =>
-  current.value ? t("text-" + current.value.id) : "",
+  current.value
+    ? current.value.pictureProps.title || t(`text-${current.value.id}-title`)
+    : "",
 );
 
 /**
@@ -250,7 +253,7 @@ const qrIcon = computed<TypeAwareImageProps>(() => {
         type: "picture",
         imgProps: {
           ...configured.imgProps,
-          alt: configured.imgProps.alt ?? t("text-" + p!.id),
+          alt: configured.imgProps.alt ?? t(`text-${p!.id}-title`),
         },
       };
     }
@@ -258,7 +261,7 @@ const qrIcon = computed<TypeAwareImageProps>(() => {
       type: "colored-img",
       imgProps: {
         ...configured.imgProps,
-        alt: configured.imgProps.alt ?? t("text-" + p!.id),
+        alt: configured.imgProps.alt ?? t(`text-${p!.id}-title`),
       },
     };
   }
@@ -273,9 +276,9 @@ const qrIcon = computed<TypeAwareImageProps>(() => {
   };
 });
 
-/** Related link back to another page section (typed, from the config). */
+/** Related link back to another page section (typed, on the picture props). */
 const relatedLink = computed<TypeAwareLinkProps | null>(
-  () => current.value?.relatedLink ?? null,
+  () => current.value?.pictureProps.relatedLink ?? null,
 );
 
 /**
@@ -715,11 +718,10 @@ onBeforeUnmount(() => {
 /* NOTE: prefix with `.picture-viewer-stage` (scoped) — the `Swiper`
    component root does NOT carry the scope id, so
    `.picture-viewer-swiper :deep(...)` never matches. */
-/* `.picture-viewer-img` lands on the component ROOT: the overlay wrapper
-   (ALT button on the active slide) when rendered, else the bare
-   <picture> / <img>. */
-.picture-viewer-stage :deep(.picture-viewer-img),
-.picture-viewer-stage :deep(.picture-viewer-img picture) {
+/* `.picture-viewer-img` lands on the <img> itself: the `class` prop is a
+   declared prop, so the component applies it to the img and never to the
+   overlay wrapper (which is matched by its own class name below). */
+.picture-viewer-stage :deep(.picture-viewer-img) {
   max-width: 100%;
   object-fit: contain;
 }

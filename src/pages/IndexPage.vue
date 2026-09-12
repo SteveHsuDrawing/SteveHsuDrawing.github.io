@@ -113,6 +113,7 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
               webp: { light: { en: '/images/webp/covers/projects.webp' } },
             }"
             :alt="$t('text-projects-alt')"
+            :title="$t('text-projects-title')"
             show-alt-button
             previewable
           />
@@ -147,6 +148,7 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
         webp: { light: { en: '/images/webp/covers/blogs.webp' } },
       },
       alt: $t('text-blogs-alt'),
+      title: $t('text-blogs-title'),
       showAltButton: true,
       previewable: true,
     }"
@@ -171,6 +173,7 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
         webp: { light: { en: '/images/webp/covers/chatting.webp' } },
       },
       alt: $t('text-chatting-alt'),
+      title: $t('text-chatting-title'),
       showAltButton: true,
       previewable: true,
     }"

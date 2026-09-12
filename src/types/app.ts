@@ -117,25 +117,23 @@ export interface LinkButtonGroupData {
 /** Picture descriptor — a single displayable poster in a gallery group. */
 export interface DisplayPictureData {
   /**
-   * Unique id — i18n key suffix (`t("text-" + id + "-alt")`) for the
-   * alt-text fallback and the lightbox deep-link target (`?preview=<id>`).
+   * Unique id — i18n key suffix for the per-picture `-title` / `-alt` /
+   * `-message` fallbacks (e.g. `t("text-" + id + "-alt")`) and the
+   * lightbox deep-link target (`?preview=<id>`).
    */
   id: string;
   /**
-   * FeatureAwarePictureProps for the poster.
-   * `alt` is optional — when omitted the card/viewer falls back to
-   * `t("text-" + id + "-alt")`.  width/height are omitted (masonry CSS
+   * FeatureAwarePictureProps for the poster — the picture's whole
+   * metadata lives here (`alt`, `title`, `message`, `relatedLink`).
+   * `alt` / `title` are optional — when omitted the card and the
+   * lightbox fall back to `t("text-" + id + "-alt")` /
+   * `t("text-" + id + "-title")`.  width/height are omitted (masonry CSS
    * controls the layout) and `loading` defaults to lazy in the card
    * component.
    */
   pictureProps: FeatureAwarePictureProps;
   /** QR share-card centre overlay icon (picture or colored). */
   qrCodeIcon?: TypeAwareImageProps;
-  /**
-   * Typed link back to a related section on another page
-   * (e.g. internal → "/artworks-and-videos.html#sticker-collections").
-   */
-  relatedLink?: TypeAwareLinkProps;
 }
 
 /** Picture-list group descriptor — a titled gallery section. */
@@ -270,6 +268,25 @@ export interface FeatureAwarePictureProps {
    * click opens the single-image viewer with these props.
    */
   previewable?: boolean;
+  /**
+   * Picture title (pre-resolved from i18n).  NEVER rendered on the
+   * `<img>`: it feeds the ALT popover header and the lightbox headers,
+   * falling back to the generic `text-image-description` /
+   * `text-image-preview` label when it is absent or empty.
+   */
+  title?: string;
+  /**
+   * Short message shown under the picture by the single-image lightbox.
+   * Carried here so the lightbox needs no second channel —
+   * `FeatureAwarePicture` itself never renders it.
+   */
+  message?: string;
+  /**
+   * Typed link back to a related page or section, rendered by the
+   * single-image and group lightbox footers.
+   * `FeatureAwarePicture` itself never renders it.
+   */
+  relatedLink?: TypeAwareLinkProps;
 }
 
 // -------------------------------------------------------------------------
@@ -454,23 +471,13 @@ export interface PictureGroupViewerModalProps {
 /** Props for PictureViewerModal (single-image mode) — modal-stack item. */
 export interface PictureViewerModalProps {
   /**
-   * Display props of the single picture to show.  The stage owns the
-   * rendered size and styling: `class` / `aspectRatio` / `width` /
-   * `height` are stripped by the viewer before rendering.
+   * Display props of the single picture to show — the picture's whole
+   * metadata travels in this object (`alt` / `title` / `message` /
+   * `relatedLink`).  The stage owns the rendered size and styling:
+   * `class` / `aspectRatio` / `width` / `height` are stripped by the
+   * viewer before rendering.
    */
   img: FeatureAwarePictureProps;
-  /**
-   * Resolved header title (the composable defaults it to
-   * `t("text-image-preview")`); the viewer falls back to the same key
-   * when it is missing.
-   */
-  title?: string;
-}
-
-/** Options for `openPictureViewer()` (single-image viewer). */
-export interface PictureViewerOptions {
-  /** Header title — defaults to `t("text-image-preview")`. */
-  title?: string;
 }
 
 /** Modal component identifiers in the modal stack. */

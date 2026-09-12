@@ -33,17 +33,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-1-vol-1.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       },
       {
@@ -64,17 +64,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-1-vol-2.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       },
       {
@@ -95,17 +95,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-1-vol-3.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       },
       {
@@ -126,17 +126,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-2-vol-1.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       },
       {
@@ -157,17 +157,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-2-vol-2.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       },
       {
@@ -188,17 +188,17 @@
             }
           },
           "feature": ["follow-language"],
-          "aspectRatio": 0.75
+          "aspectRatio": 0.75,
+          "relatedLink": {
+            "type": "internal",
+            "href": "/artworks-and-videos.html#sticker-collections"
+          }
         },
         "qrCodeIcon": {
           "type": "picture",
           "imgProps": {
             "src": "/images/webp/icons/sticker-collection-series-2-vol-3.webp"
           }
-        },
-        "relatedLink": {
-          "type": "internal",
-          "href": "/artworks-and-videos.html#sticker-collections"
         }
       }
     ]

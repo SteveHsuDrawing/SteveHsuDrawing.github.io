@@ -30,6 +30,7 @@ const { groups, pagePath } = useLinkCards(ref("softwares"));
         webp: { light: { en: '/images/webp/covers/projects.webp' } },
       },
       alt: $t('text-projects-alt'),
+      title: $t('text-projects-title'),
       showAltButton: true,
       previewable: true,
     }"

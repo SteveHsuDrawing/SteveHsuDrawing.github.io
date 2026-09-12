@@ -57,6 +57,7 @@ function onMajorColorClick(event: Event): void {
         webp: { light: { en: '/images/webp/covers/about.webp' } },
       },
       alt: $t('text-about-alt'),
+      title: 'SELF',
       showAltButton: true,
       previewable: true,
       class: 'no-copy solid-bg',

@@ -27,6 +27,7 @@ const { groups, pagePath } = useLinkCards(ref("blogs-and-sponsor"));
         webp: { light: { en: '/images/webp/covers/blogs.webp' } },
       },
       alt: $t('text-blogs-alt'),
+      title: $t('text-blogs-title'),
       showAltButton: true,
       previewable: true,
     }"

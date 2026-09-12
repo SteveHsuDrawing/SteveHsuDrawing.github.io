@@ -73,9 +73,11 @@ export interface DisplayPicture {
   pictureProps?: {
     srcMap?: unknown;
     feature?: string[];
+    /** Optional literal title (language-neutral pictures, e.g. "SELF"). */
+    title?: string;
+    relatedLink?: TypeAwareLink;
   };
   qrCodeIcon?: TypeAwareImage;
-  relatedLink?: TypeAwareLink;
 }
 
 /** A group of display pictures. */

@@ -171,8 +171,10 @@ function renderPictureGroups(groups: DisplayPictureGroup[]): string {
     if (description) parts.push(description, "");
     if (group.contents && group.contents.length > 0) {
       for (const pic of group.contents) {
-        const title = textFor(pic.id);
-        const href = pic.relatedLink?.href;
+        // Per-picture title key (`text-<id>-title`); a literal title in
+        // the config wins (language-neutral pictures such as "SELF").
+        const title = pic.pictureProps?.title || textFor(pic.id + "-title");
+        const href = pic.pictureProps?.relatedLink?.href;
         parts.push(href ? `- [${title}](${href})` : `- ${title}`);
       }
       parts.push("");

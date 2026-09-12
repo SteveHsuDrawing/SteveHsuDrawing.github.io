@@ -9,17 +9,17 @@
  * (`?preview=` / `?picGroupId=`), never a consequence of opening this
  * one.
  *
+ * The picture's whole metadata travels in the props object (`alt` /
+ * `title` / `message` / `relatedLink`) — there is no second parameter;
+ * the viewer falls back to `t("text-image-preview")` when the picture
+ * carries no title.
+ *
  * @example
  * const { openPictureViewer } = usePictureViewer();
- * openPictureViewer(props);                       // default title
- * openPictureViewer(props, { title: "Cover" });   // explicit title
+ * openPictureViewer(props);
  */
 
-import type {
-  FeatureAwarePictureProps,
-  PictureViewerOptions,
-} from "../types/app";
-import { useI18n } from "./useI18n";
+import type { FeatureAwarePictureProps } from "../types/app";
 import { useModalStack } from "./useModalStack";
 
 // =========================================================================
@@ -29,31 +29,17 @@ import { useModalStack } from "./useModalStack";
 /**
  * Single-image viewer controller.
  *
- * @returns `openPictureViewer(img, options?)` — pushes the lightbox
- *   with the given display props; the header title defaults to the
- *   localized `text-image-preview` string.
+ * @returns `openPictureViewer(img)` — pushes the lightbox with the
+ *   given display props.
  */
 export function usePictureViewer(): {
   /** Push the single-image viewer with the given display props. */
-  openPictureViewer: (
-    img: FeatureAwarePictureProps,
-    options?: PictureViewerOptions,
-  ) => void;
+  openPictureViewer: (img: FeatureAwarePictureProps) => void;
 } {
   const { push } = useModalStack();
-  const { t } = useI18n();
 
-  function openPictureViewer(
-    img: FeatureAwarePictureProps,
-    options?: PictureViewerOptions,
-  ): void {
-    push({
-      id: "picture-viewer",
-      props: {
-        img,
-        title: options?.title ?? t("text-image-preview"),
-      },
-    });
+  function openPictureViewer(img: FeatureAwarePictureProps): void {
+    push({ id: "picture-viewer", props: { img } });
   }
 
   return { openPictureViewer };
