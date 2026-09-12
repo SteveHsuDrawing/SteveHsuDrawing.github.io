@@ -114,6 +114,20 @@ export function textFor(id: string): string {
   return getEn()["text-" + id] ?? id;
 }
 
+/**
+ * Resolve a link-card label: `text-<id>-title` first, then the legacy
+ * `text-<id>`, falling back to the raw id.  Mirrors the runtime
+ * resolution in `LinkCard.vue` (v3.14.4) — a card whose id is also a
+ * picture id shares the picture's title key.
+ *
+ * @param id - The config id (e.g. "sticker-collection-series-1-vol-1").
+ * @returns The English label for the id.
+ */
+export function textForTitle(id: string): string {
+  const en = getEn();
+  return en["text-" + id + "-title"] ?? en["text-" + id] ?? id;
+}
+
 // =========================================================================
 // Config loaders
 // =========================================================================

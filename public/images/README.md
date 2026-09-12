@@ -1,7 +1,7 @@
 # Copyright Notice for Original Artworks
 
 **Author:** Steve Hsu (什五) \
-**Last updated:** 2026-08-29
+**Last updated:** 2026-09-12
 
 ---
 
@@ -14,7 +14,6 @@ All files listed in this section are **original artworks** created by me, Steve 
 | Path / Pattern                                | Description                                                    |
 | --------------------------------------------- | -------------------------------------------------------------- |
 | `*/banner.*`                                  | Website preview banner                                         |
-| `*/covers/about.*`                            | Cover image for the About page                                 |
 | `*/covers/artworks-*.*`                       | Cover images for the Artworks & Videos page                    |
 | `*/covers/illustration-*.*`                   | Illustrations as cover images for the homepage                 |
 | `*/covers/worldview-*.*`                      | Cover image for the Worldview page                             |

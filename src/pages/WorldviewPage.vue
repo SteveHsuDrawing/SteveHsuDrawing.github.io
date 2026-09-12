@@ -34,6 +34,13 @@ const coverMessage = computed(() =>
   t(`text-worldview-${coverIndex.value}-message`),
 );
 
+/** Cover related link href shown under the picture by the lightbox. */
+const coverRelatedLinkHref = computed(() =>
+  coverIndex.value === "1"
+    ? "https://www.pixiv.net/artworks/149401566"
+    : "https://www.pixiv.net/artworks/149435832",
+);
+
 // =========================================================================
 // Markdown content (per-language raw import, reactive to language)
 // =========================================================================
@@ -60,6 +67,17 @@ const { content } = useMarkdownContent("worldview");
       message: coverMessage,
       showAltButton: true,
       previewable: true,
+      relatedLink: {
+        type: 'external',
+        href: coverRelatedLinkHref,
+        icon: {
+          type: 'picture',
+          imgProps: {
+            src: '/images/webp/icons/pixiv.webp',
+          },
+        },
+        noQRCode: true,
+      },
       class: 'no-copy solid-bg',
     }"
   />

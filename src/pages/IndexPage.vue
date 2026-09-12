@@ -114,6 +114,10 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
             }"
             :alt="$t('text-projects-alt')"
             :title="$t('text-projects-title')"
+            :related-link="{
+              type: 'internal',
+              href: '/softwares.html#quanto-series',
+            }"
             show-alt-button
             previewable
           />
@@ -149,6 +153,10 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
       },
       alt: $t('text-blogs-alt'),
       title: $t('text-blogs-title'),
+      relatedLink: {
+        type: 'internal',
+        href: '/blogs-and-sponsor.html',
+      },
       showAltButton: true,
       previewable: true,
     }"
@@ -174,6 +182,10 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
       },
       alt: $t('text-chatting-alt'),
       title: $t('text-chatting-title'),
+      relatedLink: {
+        type: 'internal',
+        href: '/chatting.html',
+      },
       showAltButton: true,
       previewable: true,
     }"

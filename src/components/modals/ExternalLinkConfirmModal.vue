@@ -1,8 +1,10 @@
 <!--
   ExternalLinkConfirmModal.vue — External link safety check.
   Props + visibility come from the shared modal stack (useStackModal).
-  Cancel pops one level (back to the previous modal, if any);
-  backdrop / Esc clears the whole stack.
+  Confirm and Cancel both pop ONE level (back to the previous modal, if
+  any) — the overlay that opened the confirmation is the user's context
+  and must survive (e.g. a picture lightbox with the "open in new tab"
+  preference); backdrop / Esc clears the whole stack.
 -->
 <script setup lang="ts">
 import { computed, ref } from "vue";
@@ -24,7 +26,7 @@ import TooltipTrigger from "../render-functions/TooltipTrigger.vue";
 // =========================================================================
 
 const { visible, props: stackProps } = useStackModal("external-link");
-const { push, pop, clear } = useModalStack();
+const { push, pop } = useModalStack();
 
 const openInNewTab = useStoredValue(
   getStoredOpenInNewTab,
@@ -70,13 +72,20 @@ const displayIcon = computed<TypeAwareImageProps | null>(() => {
 // Actions
 // =========================================================================
 
+/**
+ * Confirm — open the link, then pop ONE level: only the confirmation is
+ * done.  The overlay below (a picture lightbox, for instance) stays; with
+ * the new-tab preference the page is not unloaded either, so clearing the
+ * stack here would throw the user's context away.  From a plain page this
+ * is identical to `clear()` — the stack holds a single entry.
+ */
 function confirm(): void {
   if (openInNewTab.value) {
     window.open(url.value, "_blank", "noopener,noreferrer");
   } else {
     window.location.href = url.value;
   }
-  clear();
+  pop();
 }
 
 function showQR(): void {

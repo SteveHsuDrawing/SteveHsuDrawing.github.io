@@ -53,11 +53,22 @@ function onMajorColorClick(event: Event): void {
     :description="$t('text-about-description')"
     :image="{
       srcMap: {
-        avif: { light: { en: '/images/avif/covers/about.avif' } },
-        webp: { light: { en: '/images/webp/covers/about.webp' } },
+        avif: { light: { en: '/images/avif/covers/illustration-1.avif' } },
+        webp: { light: { en: '/images/webp/covers/illustration-1.webp' } },
       },
-      alt: $t('text-about-alt'),
+      alt: $t('text-illustration-1-alt'),
       title: 'SELF',
+      relatedLink: {
+        type: 'external',
+        href: 'https://www.pixiv.net/artworks/144184773',
+        icon: {
+          type: 'picture',
+          imgProps: {
+            src: '/images/webp/icons/pixiv.webp',
+          },
+        },
+        noQRCode: true,
+      },
       showAltButton: true,
       previewable: true,
       class: 'no-copy solid-bg',

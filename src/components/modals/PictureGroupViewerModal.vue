@@ -382,21 +382,22 @@ function goBack(): void {
 }
 
 /**
- * Related-link click — dismiss the whole overlay first (so it never lingers
- * over the destination page), then navigate.
+ * Related-link click — only INTERNAL links dismiss the overlay: the
+ * viewer is about to be replaced by its destination page, so the whole
+ * stack is cleared and the navigation is deferred to the next tick (the
+ * viewer-close URL cleanup, `stripPreview` → `router.replace`, runs in the
+ * same flush and would otherwise cancel a synchronous push).
  *
- * Internal links: the navigation is deferred to the next tick because the
- * viewer-close URL cleanup (`stripPreview` → `router.replace`) runs in the
- * same flush and would otherwise cancel a synchronous push.  External
- * links: TypeAwareLink opens the confirm modal as usual.
+ * External / email / anchor links keep the stack intact:
+ * `TypeAwareLink`'s own handler (which runs first) pushes the
+ * confirmation modal for external links — clearing here would remove the
+ * modal it had just pushed — and handles the other types natively.
  */
 function onRelatedLinkClick(): void {
   const link = relatedLink.value;
-  if (!link) return;
+  if (!link || link.type !== "internal") return;
   clear();
-  if (link.type === "internal") {
-    nextTick(() => router.push(link.href));
-  }
+  nextTick(() => router.push(link.href));
 }
 
 // ---- Keyboard (interactive: Swiper Keyboard module; fallback: window) ----
@@ -607,6 +608,7 @@ onBeforeUnmount(() => {
             v-bind="relatedLink"
             class="btn btn-outline-primary btn-no-border me-auto"
             :aria-label="$t('text-open-related-page')"
+            hide-indicator
             @click="onRelatedLinkClick()"
           >
             <i class="bi bi-box-arrow-up-right"></i>

@@ -24,6 +24,7 @@ import {
   loadLinkButtonGroups,
   loadPictureGroups,
   textFor,
+  textForTitle,
   type LinkCardGroup,
   type LinkButtonGroup,
   type DisplayPictureGroup,
@@ -123,7 +124,7 @@ function renderCardGroups(groups: LinkCardGroup[]): string {
     parts.push(`## ${groupTitle}`, "");
     if (group.contents && group.contents.length > 0) {
       for (const card of group.contents) {
-        const cardTitle = textFor(card.id);
+        const cardTitle = textForTitle(card.id);
         const cardHref = card.titleLink?.href;
         const cardDesc = extractPlainText(card.description);
         const link = cardHref ? `[${cardTitle}](${cardHref})` : cardTitle;

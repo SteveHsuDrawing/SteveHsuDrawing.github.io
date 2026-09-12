@@ -14,6 +14,7 @@ import {
   loadLinkCardGroups,
   loadLinkButtonGroups,
   textFor,
+  textForTitle,
   type LinkCardGroup,
   type LinkButtonGroup,
 } from "./content-extract";
@@ -46,7 +47,7 @@ function generateCardNoscript(groups: LinkCardGroup[]): string {
     if (group.contents && group.contents.length > 0) {
       parts.push("<ul>");
       for (const card of group.contents) {
-        const cardTitle = textFor(card.id);
+        const cardTitle = textForTitle(card.id);
         const cardHref = card.titleLink?.href;
         const cardDesc = extractPlainText(card.description);
 

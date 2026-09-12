@@ -10,7 +10,6 @@ public-domain unless explicitly licensed.
 
 - All-Rights-Reserved (display only):
   - `*/banner.*`
-  - `*/covers/about.*`
   - `*/covers/artworks-*.*`
   - `*/covers/illustration-*.*`
   - `*/covers/worldview-*.*`

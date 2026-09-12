@@ -87,20 +87,24 @@ function close(): void {
 }
 
 /**
- * Related-link click — dismiss the overlay first (so it never lingers over
- * the destination), then navigate.  Internal links are pushed on the next
- * tick because the close bookkeeping runs in the same flush and would
- * otherwise cancel a synchronous push.  External links keep their own
- * flow: `TypeAwareLink` opens the confirmation modal, which owns the QR
- * affordance.
+ * Related-link click — only INTERNAL links dismiss the overlay: the
+ * picture is about to be replaced by its destination page, so the whole
+ * stack is cleared and the navigation is pushed on the next tick (the
+ * close bookkeeping runs in the same flush and would otherwise cancel a
+ * synchronous push).
+ *
+ * Every other type keeps the stack intact: `TypeAwareLink`'s own handler
+ * (which runs first) pushes the confirmation modal for external links —
+ * clearing here would remove the modal it had just pushed — and handles
+ * email / anchor links natively.  The lightbox stays underneath as the
+ * user's context; the confirmation dismisses itself (`pop()`), and only
+ * Esc / backdrop clear the whole stack.
  */
 function onRelatedLinkClick(): void {
   const link = relatedLink.value;
-  if (!link) return;
+  if (!link || link.type !== "internal") return;
   clear();
-  if (link.type === "internal") {
-    nextTick(() => router.push(link.href));
-  }
+  nextTick(() => router.push(link.href));
 }
 
 function onShown(): void {
@@ -146,6 +150,7 @@ onBeforeUnmount(() => {
             class="btn btn-outline-primary btn-no-border me-auto"
             :aria-label="$t('text-open-related-page')"
             @click="onRelatedLinkClick()"
+            hide-indicator
           >
             <i class="bi bi-box-arrow-up-right"></i>
           </TypeAwareLink>

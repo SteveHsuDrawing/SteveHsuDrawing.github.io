@@ -43,8 +43,17 @@ const titleLink = computed<TypeAwareLinkProps | null>(() =>
   props.card.available === false ? null : props.card.titleLink,
 );
 
-/** Title text derived from the card id. */
-const titleText = computed(() => t("text-" + props.card.id));
+/**
+ * Title text derived from the card id — a per-picture key
+ * (`text-<id>-title`) wins, so a card whose id is also a picture id (the
+ * sticker-collection cards on the Artworks page) shares that picture's
+ * title instead of duplicating the text.  `||`, never `??`: the i18n
+ * resolver returns "" for a key that is missing everywhere.  The icon alt
+ * derives from this text as well.
+ */
+const titleText = computed(
+  () => t(`text-${props.card.id}-title`) || t("text-" + props.card.id),
+);
 
 // ---- Icon (id-derived alt) ----
 
