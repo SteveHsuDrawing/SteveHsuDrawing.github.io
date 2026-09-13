@@ -59,7 +59,7 @@ function onMajorColorClick(event: Event): void {
       pictureProps('illustration-1', {
         showAltButton: true,
         previewable: true,
-        class: 'no-copy solid-bg',
+        class: 'solid-bg',
         relatedLink: { noQRCode: true },
       })
     "

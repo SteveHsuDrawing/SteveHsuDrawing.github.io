@@ -23,6 +23,32 @@
     ]
   },
   {
+    "id": "hero-covers",
+    "description": {
+      "type": "element",
+      "tagName": "span",
+      "children": [
+        {
+          "type": "text",
+          "value": "The hero covers of the site's pages are collected here for browsing."
+        }
+      ],
+      "properties": {
+        "dataI18n": "text-hero-covers-description"
+      }
+    },
+    "pages": ["gallery"],
+    "contents": [
+      "artworks",
+      "illustration-1",
+      "blogs",
+      "chatting",
+      "projects",
+      "worldview-0",
+      "worldview-1"
+    ]
+  },
+  {
     "id": "sticker-collections",
     "description": {
       "type": "element",

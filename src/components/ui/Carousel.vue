@@ -6,7 +6,7 @@
       progress — see docs/todos/v3.12.0.md §13)
     - Autoplay state derived from the Swiper instance (no drift)
     - Pool-driven slides from `src/configs/picture-groups.json` via the
-      `groupId` prop (picture ids are resolved through the registry)
+      `picGroupId` prop (picture ids are resolved through the registry)
     - One controls group: play/pause + per-slide countdown bars +
       preview button (expanded on hover / always for keyboard+touch) —
       the preview opens the single-image lightbox, where the ALT
@@ -44,7 +44,7 @@ import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
 
 const props = defineProps<{
   /** Group pool id consumed by this carousel (e.g. "carousel-illustration"). */
-  groupId: string;
+  picGroupId: string;
 }>();
 
 // =========================================================================
@@ -124,7 +124,7 @@ const { findGroup } = usePictureList();
 const { pictureProps } = usePictureRegistry();
 
 /** Picture ids of this carousel's group (empty while the pool loads). */
-const slides = computed(() => findGroup(props.groupId)?.contents ?? []);
+const slides = computed(() => findGroup(props.picGroupId)?.contents ?? []);
 
 /** Id of the slide currently active (loop maps activeIndex → realIndex). */
 const currentSlide = computed(() => slides.value[activeIndex.value] ?? null);

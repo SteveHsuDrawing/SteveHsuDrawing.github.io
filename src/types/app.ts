@@ -136,6 +136,13 @@ export interface RegistryPictureProps {
   relatedLink?: TypeAwareLinkProps;
   /** Explicit width ÷ height ratio, e.g. 3:4 → 0.75 (card placeholder). */
   aspectRatio?: number;
+  /**
+   * Opt-in `.no-copy` protection — blocks contextmenu / dragstart /
+   * selection on the rendered picture (a deterrence, not a security
+   * boundary).  Default `false`; the resolver appends the class after
+   * consumer overrides, so a caller's own `class` cannot drop it.
+   */
+  noCopy?: boolean;
 }
 
 /** One picture in `src/configs/picture-registry.json`. */

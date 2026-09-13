@@ -43,6 +43,8 @@ export function findPictureEntry(
  * `alt` / `title` / `message` fall back to the id-derived i18n keys.
  * Overrides are applied on top; `relatedLink` is shallow-merged so a
  * caller can add a flag (e.g. `noQRCode`) without repeating the href.
+ * A registry `noCopy` flag appends the `no-copy` class after the
+ * override merge (so a caller's own `class` cannot drop it).
  *
  * @param entry - The registry entry.
  * @param t - i18n resolver.
@@ -54,7 +56,7 @@ export function resolvePictureProps(
   t: TextResolver,
   overrides?: PicturePropsOverride,
 ): FeatureAwarePictureProps {
-  const identity = entry.pictureProps;
+  const { noCopy, ...identity } = entry.pictureProps;
   const base: FeatureAwarePictureProps = {
     ...identity,
     pictureId: entry.id,
@@ -62,17 +64,34 @@ export function resolvePictureProps(
     title: identity.title || t(`text-${entry.id}-title`),
     message: identity.message || t(`text-${entry.id}-message`),
   };
-  if (!overrides) return base;
 
-  const { relatedLink: linkOverride, ...rest } = overrides;
-  const resolved: FeatureAwarePictureProps = { ...base, ...rest };
-  if (linkOverride) {
-    // Shallow merge — the registry link keeps href / type / icon, the
-    // caller adds or replaces single flags (e.g. `noQRCode`).
-    resolved.relatedLink = {
-      ...(base.relatedLink ?? {}),
-      ...linkOverride,
-    } as TypeAwareLinkProps;
+  let resolved = base;
+  if (overrides) {
+    const { relatedLink: linkOverride, ...rest } = overrides;
+    resolved = { ...base, ...rest };
+    if (linkOverride) {
+      // Shallow merge — the registry link keeps href / type / icon, the
+      // caller adds or replaces single flags (e.g. `noQRCode`).
+      resolved.relatedLink = {
+        ...(base.relatedLink ?? {}),
+        ...linkOverride,
+      } as TypeAwareLinkProps;
+    }
   }
+
+  // Applied last — a consumer's `class` override cannot drop it.
+  if (noCopy) resolved.class = ensureNoCopy(resolved.class);
   return resolved;
+}
+
+/**
+ * Append `no-copy` to a class string unless it is already present.
+ *
+ * @param value - Consumer class string (bare or with other classes).
+ * @returns The class string with `no-copy` appearing exactly once.
+ */
+function ensureNoCopy(value?: string): string {
+  const classes = value?.split(/\s+/).filter(Boolean) ?? [];
+  if (!classes.includes("no-copy")) classes.push("no-copy");
+  return classes.join(" ");
 }

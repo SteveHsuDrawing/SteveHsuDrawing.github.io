@@ -35,7 +35,7 @@ const { openPictureGroupViewer } = usePictureGroupViewer();
  * @param groupId - Owning group id (carried by the select chain).
  */
 function onSelect(pictureId: string, groupId: string): void {
-  openPictureGroupViewer({ groupId, picId: pictureId });
+  openPictureGroupViewer({ picGroupId: groupId, picId: pictureId });
 }
 </script>
 
@@ -48,7 +48,7 @@ function onSelect(pictureId: string, groupId: string): void {
       pictureProps('artworks', {
         showAltButton: true,
         previewable: true,
-        class: 'no-copy solid-bg',
+        class: 'solid-bg',
       })
     "
   />

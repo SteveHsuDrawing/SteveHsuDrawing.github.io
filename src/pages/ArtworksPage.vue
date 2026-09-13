@@ -29,7 +29,7 @@ const { groups, pagePath } = useLinkCards(ref("artworks-and-videos"));
       pictureProps('artworks', {
         showAltButton: true,
         previewable: true,
-        class: 'no-copy solid-bg',
+        class: 'solid-bg',
       })
     "
   />

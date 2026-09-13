@@ -116,11 +116,21 @@ usePictureViewerUrl();
 // A viewer left over a navigation would otherwise keep covering the
 // destination page.  Only PATH changes count — `?picId=` / `?picGroupId=`
 // navigations (managed by the lightbox URL owner) must not close it.
+// The router's INITIAL navigation is skipped until `router.isReady()`
+// settles: a deep link opens the viewer around the same time, and an
+// un-gated clear would race it shut (v3.15.1).
 // This replaces GalleryPage's former onBeforeUnmount hook.
+
+/** Whether the router's initial navigation has settled. */
+const routerReady = ref(false);
+void router.isReady().then(() => {
+  routerReady.value = true;
+});
 
 watch(
   () => route.path,
   () => {
+    if (!routerReady.value) return;
     const viewerOpen = stack.value.some(
       (item) =>
         item.id === "picture-viewer" || item.id === "picture-group-viewer",

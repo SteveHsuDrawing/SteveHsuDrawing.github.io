@@ -67,7 +67,7 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
       <!-- Illustration Carousel -->
       <div class="col-md-6 order-md-2 order-1 mb-4 mb-md-0">
         <div class="hero-cover-box">
-          <Carousel group-id="carousel-illustration" />
+          <Carousel pic-group-id="carousel-illustration" />
         </div>
       </div>
     </div>

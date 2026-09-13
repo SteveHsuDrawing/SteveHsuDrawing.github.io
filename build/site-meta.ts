@@ -56,7 +56,7 @@ export const PAGE_META: PageMetaMap = {
   gallery: {
     title: `Gallery - ${SITE_NAME}`,
     description:
-      "Explore the poster gallery of Steve Hsu (什五)'s artwork series, including Sticker Collections.",
+      "Explore the poster gallery of Steve Hsu (什五)'s artwork series, including the page covers and Sticker Collections.",
     pagePath: "/gallery.html",
     robots: "index, follow",
     jsonLDType: "breadcrumb",

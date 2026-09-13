@@ -14,7 +14,7 @@
  *
  * @example
  * const { openPictureGroupViewer } = usePictureGroupViewer();
- * openPictureGroupViewer({ groupId: "sticker-collections", picId: "…" });
+ * openPictureGroupViewer({ picGroupId: "sticker-collections", picId: "…" });
  */
 
 import { useRoute, useRouter } from "vue-router";
@@ -28,8 +28,8 @@ import { usePictureList } from "./usePictureList";
 
 /** Options for `openPictureGroupViewer()`. */
 export interface OpenPictureGroupViewerOptions {
-  /** Group id (pool key). */
-  groupId: string;
+  /** Group id (pool key) — the `?picGroupId=` value. */
+  picGroupId: string;
   /** Picture id to open — wins over `picIndex`. */
   picId?: string;
   /** Zero-based position inside the group (resolved to an id). */
@@ -96,12 +96,12 @@ export function usePictureGroupViewer(): {
   function openPictureGroupViewer(
     options: OpenPictureGroupViewerOptions,
   ): void {
-    const { groupId, picId, picIndex } = options;
-    const group = findGroup(groupId);
+    const { picGroupId, picId, picIndex } = options;
+    const group = findGroup(picGroupId);
     if (!group || group.contents.length === 0) {
       if (import.meta.env.DEV) {
         console.warn(
-          `[picture-group-viewer] unknown or empty group: "${groupId}"`,
+          `[picture-group-viewer] unknown or empty group: "${picGroupId}"`,
         );
       }
       return;
@@ -111,12 +111,12 @@ export function usePictureGroupViewer(): {
 
     push({
       id: "picture-group-viewer",
-      props: { groupId, contents: group.contents, currentId },
+      props: { groupId: picGroupId, contents: group.contents, currentId },
     });
     router.push({
       query: preserveLangParam({
         ...route.query,
-        picGroupId: groupId,
+        picGroupId,
         picId: currentId,
       }),
     });

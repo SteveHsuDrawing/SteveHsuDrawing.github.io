@@ -176,12 +176,15 @@ const hasReservedSpace = computed(
 /**
  * Combined class: the passed-in class plus the conditional
  * `img-loading-placeholder` marker (drives the shimmer placeholder
- * whenever the layout space is reserved).
+ * whenever the layout space is reserved).  Tokens are deduplicated —
+ * several sources may legitimately repeat one (registry `noCopy`, a
+ * template class, a consumer override).
  */
-const imgClass = computed(() => [
-  props.class,
-  { "img-loading-placeholder": hasReservedSpace.value },
-]);
+const imgClass = computed(() => {
+  const tokens = (props.class ?? "").split(/\s+/).filter(Boolean);
+  if (hasReservedSpace.value) tokens.push("img-loading-placeholder");
+  return [...new Set(tokens)];
+});
 
 // =========================================================================
 // Actions

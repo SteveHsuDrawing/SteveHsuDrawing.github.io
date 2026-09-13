@@ -12,6 +12,7 @@
           "dark": { "en": "/images/webp/covers/illustration-0-dark.webp" }
         }
       },
+      "noCopy": true,
       "feature": ["follow-theme"],
       "relatedLink": {
         "type": "external",
@@ -35,6 +36,7 @@
         },
         "webp": { "light": { "en": "/images/webp/covers/illustration-1.webp" } }
       },
+      "noCopy": true,
       "title": "SELF",
       "relatedLink": {
         "type": "external",
@@ -58,6 +60,7 @@
         },
         "webp": { "light": { "en": "/images/webp/covers/illustration-2.webp" } }
       },
+      "noCopy": true,
       "relatedLink": {
         "type": "internal",
         "href": "/gallery.html?picGroupId=sticker-collections&picId=sticker-collection-series-1-vol-1"
@@ -73,6 +76,7 @@
         },
         "webp": { "light": { "en": "/images/webp/covers/illustration-3.webp" } }
       },
+      "noCopy": true,
       "relatedLink": {
         "type": "internal",
         "href": "/gallery.html?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-2"
@@ -92,6 +96,7 @@
           "dark": { "en": "/images/webp/covers/artworks-dark.webp" }
         }
       },
+      "noCopy": true,
       "feature": ["follow-theme"]
     }
   },
@@ -129,6 +134,8 @@
         "avif": { "light": { "en": "/images/avif/covers/worldview-0.avif" } },
         "webp": { "light": { "en": "/images/webp/covers/worldview-0.webp" } }
       },
+      "noCopy": true,
+      "title": "CODENAME",
       "relatedLink": {
         "type": "external",
         "href": "https://www.pixiv.net/artworks/149435832",
@@ -150,6 +157,7 @@
         "avif": { "light": { "en": "/images/avif/covers/worldview-1.avif" } },
         "webp": { "light": { "en": "/images/webp/covers/worldview-1.webp" } }
       },
+      "noCopy": true,
       "relatedLink": {
         "type": "external",
         "href": "https://www.pixiv.net/artworks/149401566",
@@ -181,6 +189,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -212,6 +221,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -243,6 +253,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -274,6 +285,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -305,6 +317,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -336,6 +349,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {
@@ -367,6 +381,7 @@
           }
         }
       },
+      "noCopy": true,
       "feature": ["follow-language"],
       "aspectRatio": 0.75,
       "relatedLink": {

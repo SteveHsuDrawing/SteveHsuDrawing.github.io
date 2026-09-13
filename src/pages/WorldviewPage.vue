@@ -56,7 +56,7 @@ const { content } = useMarkdownContent("worldview");
         message: coverMessage,
         showAltButton: true,
         previewable: true,
-        class: 'no-copy solid-bg',
+        class: 'solid-bg',
       })
     "
   />

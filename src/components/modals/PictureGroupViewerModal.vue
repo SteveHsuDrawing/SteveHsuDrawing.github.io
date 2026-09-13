@@ -615,7 +615,7 @@ onBeforeUnmount(() => {
           <TypeAwareLink
             v-if="relatedLink"
             v-bind="relatedLink"
-            class="btn btn-outline-primary btn-no-border me-auto"
+            class="btn btn-outline-primary btn-no-border"
             :aria-label="$t('text-open-related-page')"
             hide-indicator
             @click="onRelatedLinkClick()"
@@ -623,22 +623,24 @@ onBeforeUnmount(() => {
             <i class="bi bi-box-arrow-up-right"></i>
           </TypeAwareLink>
         </TooltipTrigger>
-        <button
-          v-if="cameFromAnotherPage"
-          type="button"
-          class="btn btn-outline-primary btn-no-border"
-          :aria-label="$t('text-back')"
-          @click="goBack()"
-        >
-          {{ $t("text-back") }}
-        </button>
-        <button
-          type="button"
-          class="btn btn-outline-primary btn-no-border"
-          @click="close()"
-        >
-          {{ $t("text-close") }}
-        </button>
+        <div class="ms-auto">
+          <button
+            v-if="cameFromAnotherPage"
+            type="button"
+            class="btn btn-outline-primary btn-no-border"
+            :aria-label="$t('text-back')"
+            @click="goBack()"
+          >
+            {{ $t("text-back") }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-no-border"
+            @click="close()"
+          >
+            {{ $t("text-close") }}
+          </button>
+        </div>
       </div>
     </template>
   </BModal>
