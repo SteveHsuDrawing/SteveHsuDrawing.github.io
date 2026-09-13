@@ -8,6 +8,10 @@ import LinkCardGroups from "../components/cards/LinkCardGroups.vue";
 import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import { useLinkCards } from "../composables/useLinkCards";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Link cards
@@ -21,24 +25,13 @@ const { groups, pagePath } = useLinkCards(ref("artworks-and-videos"));
   <HeroSection
     :title="$t('text-artworks-and-videos')"
     :description="$t('text-artworks-and-videos-description')"
-    :image="{
-      srcMap: {
-        avif: {
-          light: { en: '/images/avif/covers/artworks-light.avif' },
-          dark: { en: '/images/avif/covers/artworks-dark.avif' },
-        },
-        webp: {
-          light: { en: '/images/webp/covers/artworks-light.webp' },
-          dark: { en: '/images/webp/covers/artworks-dark.webp' },
-        },
-      },
-      feature: ['follow-theme'],
-      alt: $t('text-artworks-alt'),
-      title: $t('text-artworks-title'),
-      showAltButton: true,
-      previewable: true,
-      class: 'no-copy solid-bg',
-    }"
+    :image="
+      pictureProps('artworks', {
+        showAltButton: true,
+        previewable: true,
+        class: 'no-copy solid-bg',
+      })
+    "
   />
 
   <PageChainNav page-name="artworks-and-videos" />

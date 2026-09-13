@@ -14,7 +14,11 @@ import SequenceStatusBar from "../components/ui/SequenceStatusBar.vue";
 import StickerSection from "../components/ui/StickerSection.vue";
 import { useLinkCards } from "../composables/useLinkCards";
 import { useMajorColorSequence } from "../composables/useMajorColorSequence";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
 import { OPEN_STICKER_KEY } from "../types/app";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Link cards
@@ -51,28 +55,14 @@ function onMajorColorClick(event: Event): void {
   <HeroSection
     :title="$t('text-about')"
     :description="$t('text-about-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/illustration-1.avif' } },
-        webp: { light: { en: '/images/webp/covers/illustration-1.webp' } },
-      },
-      alt: $t('text-illustration-1-alt'),
-      title: 'SELF',
-      relatedLink: {
-        type: 'external',
-        href: 'https://www.pixiv.net/artworks/144184773',
-        icon: {
-          type: 'picture',
-          imgProps: {
-            src: '/images/webp/icons/pixiv.webp',
-          },
-        },
-        noQRCode: true,
-      },
-      showAltButton: true,
-      previewable: true,
-      class: 'no-copy solid-bg',
-    }"
+    :image="
+      pictureProps('illustration-1', {
+        showAltButton: true,
+        previewable: true,
+        class: 'no-copy solid-bg',
+        relatedLink: { noQRCode: true },
+      })
+    "
   />
 
   <PageChainNav page-name="about" />

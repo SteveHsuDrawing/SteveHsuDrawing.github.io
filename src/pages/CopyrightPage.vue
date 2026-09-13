@@ -7,6 +7,10 @@
 import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import MarkdownArticle from "../components/ui/MarkdownArticle.vue";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Markdown content (build-time raw import)
@@ -20,28 +24,14 @@ import copyrightMd from "../../public/images/README.md?raw";
   <HeroSection
     :title="$t('text-copyright-notice-title')"
     :description="$t('text-copyright-notice-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/illustration-1.avif' } },
-        webp: { light: { en: '/images/webp/covers/illustration-1.webp' } },
-      },
-      alt: $t('text-illustration-1-alt'),
-      title: 'SELF',
-      relatedLink: {
-        type: 'external',
-        href: 'https://www.pixiv.net/artworks/144184773',
-        icon: {
-          type: 'picture',
-          imgProps: {
-            src: '/images/webp/icons/pixiv.webp',
-          },
-        },
-        noQRCode: true,
-      },
-      showAltButton: true,
-      previewable: true,
-      class: 'no-copy solid-bg',
-    }"
+    :image="
+      pictureProps('illustration-1', {
+        showAltButton: true,
+        previewable: true,
+        class: 'no-copy solid-bg',
+        relatedLink: { noQRCode: true },
+      })
+    "
   />
 
   <PageChainNav page-name="copyright-notice" />

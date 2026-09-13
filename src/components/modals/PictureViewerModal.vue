@@ -5,10 +5,11 @@
   the FeatureAwarePicture overlay preview button — or by any other caller
   that wants to show one picture enlarged.
 
-  Deliberately independent of GalleryPage, of the Swiper stage and of the
-  URL: no query parameters are read or written and no history entry is
-  created (`?preview=` / `?picGroupId=` belong to the GROUP viewer,
-  PictureGroupViewerModal.vue).  Leaving the page closes it (App.vue).
+  Deliberately independent of the Swiper stage and of the URL wiring: it
+  reads no query parameters and creates no history entry of its own
+  (`?picId=` / `?picGroupId=` belong to the URL owner and the GROUP viewer,
+  which mirrors the entry param back to the URL).  Leaving the page closes
+  it (App.vue).
 
   Chrome: the standard BModal shell — the picture title, an optional
   centered message under the stage, and a footer with the related-link

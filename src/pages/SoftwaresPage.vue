@@ -11,6 +11,10 @@ import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import SectionHeading from "../components/ui/SectionHeading.vue";
 import { useLinkCards } from "../composables/useLinkCards";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Link cards
@@ -24,16 +28,9 @@ const { groups, pagePath } = useLinkCards(ref("softwares"));
   <HeroSection
     :title="$t('text-softwares')"
     :description="$t('text-softwares-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/projects.avif' } },
-        webp: { light: { en: '/images/webp/covers/projects.webp' } },
-      },
-      alt: $t('text-projects-alt'),
-      title: $t('text-projects-title'),
-      showAltButton: true,
-      previewable: true,
-    }"
+    :image="
+      pictureProps('projects', { showAltButton: true, previewable: true })
+    "
   >
   </HeroSection>
 

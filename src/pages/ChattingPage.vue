@@ -8,6 +8,10 @@ import LinkCardGroups from "../components/cards/LinkCardGroups.vue";
 import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import { useLinkCards } from "../composables/useLinkCards";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Link cards
@@ -21,16 +25,9 @@ const { groups, pagePath } = useLinkCards(ref("chatting"));
   <HeroSection
     :title="$t('text-chatting')"
     :description="$t('text-chatting-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/chatting.avif' } },
-        webp: { light: { en: '/images/webp/covers/chatting.webp' } },
-      },
-      alt: $t('text-chatting-alt'),
-      title: $t('text-chatting-title'),
-      showAltButton: true,
-      previewable: true,
-    }"
+    :image="
+      pictureProps('chatting', { showAltButton: true, previewable: true })
+    "
   />
 
   <PageChainNav page-name="chatting" />

@@ -15,7 +15,11 @@ import HeroSection from "../components/ui/HeroSection.vue";
 import StickerSection from "../components/ui/StickerSection.vue";
 import { useBreakpoint } from "../composables/useBreakpoint";
 import { useLinkButtonGroups } from "../composables/useLinkButtonGroups";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
 import type { LinkButtonGroupData } from "../types/app";
+
+// Picture registry — resolves the cover props of this page's pictures.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // State
@@ -63,7 +67,7 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
       <!-- Illustration Carousel -->
       <div class="col-md-6 order-md-2 order-1 mb-4 mb-md-0">
         <div class="hero-cover-box">
-          <Carousel />
+          <Carousel group-id="carousel-illustration" />
         </div>
       </div>
     </div>
@@ -108,18 +112,16 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
       <div class="col-md-6 order-md-2 order-1 mb-4 mb-md-0">
         <div class="hero-cover-box">
           <FeatureAwarePicture
-            :src-map="{
-              avif: { light: { en: '/images/avif/covers/projects.avif' } },
-              webp: { light: { en: '/images/webp/covers/projects.webp' } },
-            }"
-            :alt="$t('text-projects-alt')"
-            :title="$t('text-projects-title')"
-            :related-link="{
-              type: 'internal',
-              href: '/softwares.html#quanto-series',
-            }"
-            show-alt-button
-            previewable
+            v-bind="
+              pictureProps('projects', {
+                showAltButton: true,
+                previewable: true,
+                relatedLink: {
+                  type: 'internal',
+                  href: '/softwares.html#quanto-series',
+                },
+              })
+            "
           />
         </div>
       </div>
@@ -146,20 +148,13 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
     heading-tag="h2"
     :title="$t('text-blogs-and-sponsor')"
     :description="$t('text-blogs-and-sponsor-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/blogs.avif' } },
-        webp: { light: { en: '/images/webp/covers/blogs.webp' } },
-      },
-      alt: $t('text-blogs-alt'),
-      title: $t('text-blogs-title'),
-      relatedLink: {
-        type: 'internal',
-        href: '/blogs-and-sponsor.html',
-      },
-      showAltButton: true,
-      previewable: true,
-    }"
+    :image="
+      pictureProps('blogs', {
+        showAltButton: true,
+        previewable: true,
+        relatedLink: { type: 'internal', href: '/blogs-and-sponsor.html' },
+      })
+    "
     :padding="false"
   >
     <LinkButtonGroup
@@ -175,20 +170,13 @@ function findGroup(groupId: string): LinkButtonGroupData | undefined {
     heading-tag="h2"
     :title="$t('text-chatting')"
     :description="$t('text-chatting-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/chatting.avif' } },
-        webp: { light: { en: '/images/webp/covers/chatting.webp' } },
-      },
-      alt: $t('text-chatting-alt'),
-      title: $t('text-chatting-title'),
-      relatedLink: {
-        type: 'internal',
-        href: '/chatting.html',
-      },
-      showAltButton: true,
-      previewable: true,
-    }"
+    :image="
+      pictureProps('chatting', {
+        showAltButton: true,
+        previewable: true,
+        relatedLink: { type: 'internal', href: '/chatting.html' },
+      })
+    "
     :padding="false"
   >
     <LinkButtonGroup

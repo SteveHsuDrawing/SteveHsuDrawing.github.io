@@ -17,6 +17,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "./composables/useI18n";
 import { useModalStack } from "./composables/useModalStack";
 import { usePageNavigation } from "./composables/usePageNavigation";
+import { usePictureViewerUrl } from "./composables/usePictureViewerUrl";
 import { useStoredValue } from "./composables/useStoredValue";
 import { useTheme } from "./composables/useTheme";
 import { SHOW_TOAST_KEY } from "./composables/useToast";
@@ -105,12 +106,17 @@ usePageNavigation(router, loadingBarRef, t);
 
 const { push, stack, clear } = useModalStack();
 
+// ---- Lightbox query parameters (?picGroupId= / ?picId=) ----
+// The single owner of the lightbox URL state: it opens the viewers for a
+// deep link on any page and strips the params once no lightbox is open.
+
+usePictureViewerUrl();
+
 // ---- Leaving a page dismisses any open picture viewer ----
-// The group viewer's query params are gone on the destination route and
-// the single viewer carries no URL state at all, so a viewer left over a
-// navigation would otherwise keep covering the destination page.  Only
-// PATH changes count — `?preview=` / `?picGroupId=` navigations must not
-// close it.  This replaces GalleryPage's former onBeforeUnmount hook.
+// A viewer left over a navigation would otherwise keep covering the
+// destination page.  Only PATH changes count — `?picId=` / `?picGroupId=`
+// navigations (managed by the lightbox URL owner) must not close it.
+// This replaces GalleryPage's former onBeforeUnmount hook.
 
 watch(
   () => route.path,

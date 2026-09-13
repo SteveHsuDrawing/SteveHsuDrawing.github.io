@@ -5,8 +5,8 @@
     - Effect creative transition, `rewind` mode (loop breaks creative
       progress — see docs/todos/v3.12.0.md §13)
     - Autoplay state derived from the Swiper instance (no drift)
-    - Config-driven slides from `src/configs/picture-list/index.json`
-      (group id `carousel-illustration`)
+    - Pool-driven slides from `src/configs/picture-groups.json` via the
+      `groupId` prop (picture ids are resolved through the registry)
     - One controls group: play/pause + per-slide countdown bars +
       preview button (expanded on hover / always for keyboard+touch) —
       the preview opens the single-image lightbox, where the ALT
@@ -30,22 +30,26 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { computed, nextTick, ref, shallowRef, watch } from "vue";
 import { useI18n } from "../../composables/useI18n";
 import { usePictureList } from "../../composables/usePictureList";
+import { usePictureRegistry } from "../../composables/usePictureRegistry";
 import { usePictureViewer } from "../../composables/usePictureViewer";
 import { useTheme } from "../../composables/useTheme";
 import { isSwiperSupported } from "../../platform/advanced-feat-support";
 import { isImageEdgeDark } from "../../platform/image-luminance";
-import type {
-  DisplayPictureData,
-  FeatureAwarePictureProps,
-} from "../../types/app";
+import type { FeatureAwarePictureProps } from "../../types/app";
 import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
+
+// =========================================================================
+// Props
+// =========================================================================
+
+const props = defineProps<{
+  /** Group pool id consumed by this carousel (e.g. "carousel-illustration"). */
+  groupId: string;
+}>();
 
 // =========================================================================
 // State
 // =========================================================================
-
-/** Picture-list group id consumed by this carousel. */
-const GROUP_ID = "carousel-illustration";
 
 /** Swiper v14 module set used by this carousel. */
 const modules = [Autoplay, EffectCreative, Keyboard, A11y];
@@ -113,31 +117,28 @@ const { effectiveTheme } = useTheme();
 const { openPictureViewer } = usePictureViewer();
 
 // -------------------------------------------------------------------------
-// Config-driven slides (picture-list, group `carousel-illustration`)
+// Pool-driven slides (resolved through the registry)
 // -------------------------------------------------------------------------
 
-const { groups } = usePictureList(ref("index"));
+const { findGroup } = usePictureList();
+const { pictureProps } = usePictureRegistry();
 
-/** Slides of the `carousel-illustration` group (empty while loading). */
-const slides = computed(
-  () => groups.value?.find((g) => g.id === GROUP_ID)?.contents ?? [],
-);
+/** Picture ids of this carousel's group (empty while the pool loads). */
+const slides = computed(() => findGroup(props.groupId)?.contents ?? []);
 
-/** Slide currently active (loop maps activeIndex → realIndex). */
+/** Id of the slide currently active (loop maps activeIndex → realIndex). */
 const currentSlide = computed(() => slides.value[activeIndex.value] ?? null);
 
 /**
- * Display props of ONE slide for the single-image lightbox — the
- * config's own props plus the id-derived fallbacks (the JSON carries no
- * `alt` / `title`), so the lightbox can show the slide title and its ALT
- * description, and render the slide's `relatedLink` in its footer.
+ * Display props of ONE slide — the registry's identity plus the carousel's
+ * own display policy (the first slide loads eagerly with a high fetch
+ * priority, every other slide lazily).
  */
-function previewPropsOf(slide: DisplayPictureData): FeatureAwarePictureProps {
-  return {
-    ...slide.pictureProps,
-    alt: slide.pictureProps.alt ?? t(`text-${slide.id}-alt`),
-    title: slide.pictureProps.title || t(`text-${slide.id}-title`),
-  };
+function slideProps(id: string, index: number): FeatureAwarePictureProps {
+  return pictureProps(id, {
+    fetchpriority: index === 0 ? "high" : undefined,
+    loading: index === 0 ? undefined : "lazy",
+  });
 }
 
 // -------------------------------------------------------------------------
@@ -255,9 +256,9 @@ function goToSlide(index: number): void {
  * active slide from the controls group, the first slide from the static
  * fallback branch).
  */
-function onPreviewClick(slide: DisplayPictureData | null | undefined): void {
-  if (!slide) return;
-  openPictureViewer(previewPropsOf(slide));
+function onPreviewClick(pictureId: string | null | undefined): void {
+  if (!pictureId) return;
+  openPictureViewer(pictureProps(pictureId));
 }
 
 /**
@@ -382,10 +383,9 @@ watch(effectiveTheme, () => {
       @autoplay-resume="onAutoplayResume"
       @autoplay-time-left="onAutoplayTimeLeft"
     >
-      <SwiperSlide v-for="slide in slides" :key="slide.id">
+      <SwiperSlide v-for="(slideId, i) in slides" :key="slideId">
         <FeatureAwarePicture
-          v-bind="slide.pictureProps"
-          :alt="slide.pictureProps.alt ?? t(`text-${slide.id}-alt`)"
+          v-bind="slideProps(slideId, i)"
           class="d-block w-100 h-100 no-copy solid-bg"
         />
       </SwiperSlide>
@@ -409,8 +409,8 @@ watch(effectiveTheme, () => {
 
       <div class="carousel-bars">
         <button
-          v-for="(slide, i) in slides"
-          :key="slide.id"
+          v-for="(slideId, i) in slides"
+          :key="slideId"
           type="button"
           class="carousel-bar"
           :class="{
@@ -441,7 +441,7 @@ watch(effectiveTheme, () => {
   <div v-else class="illustration-carousel illustration-carousel-static">
     <template v-if="slides[0]">
       <FeatureAwarePicture
-        v-bind="previewPropsOf(slides[0])"
+        v-bind="slideProps(slides[0], 0)"
         show-alt-button
         previewable
         class="d-block w-100 h-100 no-copy solid-bg"

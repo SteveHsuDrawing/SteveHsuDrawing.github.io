@@ -290,7 +290,7 @@ watch([resolvedImgSrc, resolvedAvifSrc], () => {
         v-if="hasAltButton"
         :title="popoverTitle"
         placement="top"
-        click
+        hover
         lazy
         teleport-to="body"
       >

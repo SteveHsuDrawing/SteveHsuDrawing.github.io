@@ -1,13 +1,10 @@
 <!--
   PictureListGroups.vue — Page-level picture-list section.
-  Iterates over DisplayPictureGroupData[] from the picture-list JSON config
-  and renders each group with <hr> separators between them.
+  Iterates over DisplayPictureGroupData[] from the group pool and renders
+  each group with <hr> separators between them.
 -->
 <script setup lang="ts">
-import type {
-  DisplayPictureData,
-  DisplayPictureGroupData,
-} from "../../types/app";
+import type { DisplayPictureGroupData } from "../../types/app";
 import PictureGroup from "./PictureGroup.vue";
 
 // =========================================================================
@@ -23,7 +20,7 @@ defineProps<{
 
 const emit = defineEmits<{
   /** Fired when a picture card is activated. */
-  select: [picture: DisplayPictureData];
+  select: [pictureId: string, groupId: string];
 }>();
 </script>
 
@@ -33,7 +30,7 @@ const emit = defineEmits<{
     <PictureGroup
       :group="group"
       :page-path="pagePath"
-      @select="emit('select', $event)"
+      @select="emit('select', $event, group.id)"
     />
   </template>
 </template>

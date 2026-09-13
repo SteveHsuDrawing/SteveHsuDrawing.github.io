@@ -10,7 +10,11 @@ import HeroSection from "../components/ui/HeroSection.vue";
 import MarkdownArticle from "../components/ui/MarkdownArticle.vue";
 import { useI18n } from "../composables/useI18n";
 import { useMarkdownContent } from "../composables/useMarkdownContent";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
 import { isBirthdayWeek } from "../core/birthday";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Birthday-week hero cover
@@ -34,13 +38,6 @@ const coverMessage = computed(() =>
   t(`text-worldview-${coverIndex.value}-message`),
 );
 
-/** Cover related link href shown under the picture by the lightbox. */
-const coverRelatedLinkHref = computed(() =>
-  coverIndex.value === "1"
-    ? "https://www.pixiv.net/artworks/149401566"
-    : "https://www.pixiv.net/artworks/149435832",
-);
-
 // =========================================================================
 // Markdown content (per-language raw import, reactive to language)
 // =========================================================================
@@ -53,33 +50,15 @@ const { content } = useMarkdownContent("worldview");
   <HeroSection
     :title="$t('text-worldview')"
     :description="$t('text-worldview-description')"
-    :image="{
-      srcMap: {
-        avif: {
-          light: { en: `/images/avif/covers/worldview-${coverIndex}.avif` },
-        },
-        webp: {
-          light: { en: `/images/webp/covers/worldview-${coverIndex}.webp` },
-        },
-      },
-      alt: $t(`text-worldview-${coverIndex}-alt`),
-      title: coverTitle,
-      message: coverMessage,
-      showAltButton: true,
-      previewable: true,
-      relatedLink: {
-        type: 'external',
-        href: coverRelatedLinkHref,
-        icon: {
-          type: 'picture',
-          imgProps: {
-            src: '/images/webp/icons/pixiv.webp',
-          },
-        },
-        noQRCode: true,
-      },
-      class: 'no-copy solid-bg',
-    }"
+    :image="
+      pictureProps(`worldview-${coverIndex}`, {
+        title: coverTitle,
+        message: coverMessage,
+        showAltButton: true,
+        previewable: true,
+        class: 'no-copy solid-bg',
+      })
+    "
   />
 
   <PageChainNav page-name="worldview" />

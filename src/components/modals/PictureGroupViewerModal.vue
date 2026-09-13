@@ -32,11 +32,11 @@ import { useRoute, useRouter } from "vue-router";
 import { setSwipeTrackingEnabled } from "../../composables/useGesture";
 import { useI18n } from "../../composables/useI18n";
 import { useModalStack, useStackModal } from "../../composables/useModalStack";
+import { usePictureRegistry } from "../../composables/usePictureRegistry";
 import { normalizeInternalPath, preserveLangParam } from "../../core/utils";
 import { isSwiperSupported } from "../../platform/advanced-feat-support";
 import { isImageEdgeDark } from "../../platform/image-luminance";
 import type {
-  DisplayPictureData,
   FeatureAwarePictureProps,
   TypeAwareImageProps,
   TypeAwareLinkProps,
@@ -82,9 +82,12 @@ const A11Y_CONFIG = { enabled: true };
 // Current picture (initialized from currentId, then navigated internally)
 // -------------------------------------------------------------------------
 
-const contents = computed<DisplayPictureData[]>(
-  () => stackProps.value?.contents ?? [],
-);
+const { pictureProps: resolvePicture } = usePictureRegistry();
+
+/** Group id from the stack — written to `?picGroupId=` by the URL sync. */
+const groupId = computed(() => stackProps.value?.groupId ?? "");
+
+const contents = computed<string[]>(() => stackProps.value?.contents ?? []);
 
 const index = ref(0);
 
@@ -95,7 +98,7 @@ watch(
   stackProps,
   (p) => {
     if (p && p.contents?.length) {
-      const idx = p.contents.findIndex((c) => c.id === p.currentId);
+      const idx = p.contents.indexOf(p.currentId);
       index.value = idx >= 0 ? idx : 0;
     }
   },
@@ -103,9 +106,9 @@ watch(
 );
 
 /** Identity of the current picture list (re-creates the Swiper). */
-const contentsKey = computed(() => contents.value.map((c) => c.id).join(","));
+const contentsKey = computed(() => contents.value.join(","));
 
-const current = computed<DisplayPictureData | null>(
+const current = computed<string | null>(
   () => contents.value[index.value] ?? null,
 );
 
@@ -119,23 +122,21 @@ const hintsVisible = computed(() =>
 );
 
 // -------------------------------------------------------------------------
-// Per-picture display props (single source of truth is `contents`)
+// Per-picture display props (identity comes from the registry)
 // -------------------------------------------------------------------------
 
-/** Poster props for one picture (title / alt fall back to `<id>-title` / `-alt`). */
-function picturePropsOf(p: DisplayPictureData): FeatureAwarePictureProps {
+/** Stage props for one picture — registry identity + stage display keys. */
+function picturePropsOf(pictureId: string): FeatureAwarePictureProps {
   // `aspectRatio` is a card-layer loading placeholder — the viewer
   // stage owns the displayed size (max-width: 72% + height: 100% +
   // object-fit: contain), so an inline aspect-ratio must not leak in.
-  const { aspectRatio: _ignored, ...rest } = p.pictureProps;
+  const { aspectRatio: _ignored, ...rest } = resolvePicture(pictureId);
   return {
     ...rest,
-    title: p.pictureProps.title || t(`text-${p.id}-title`),
-    alt: p.pictureProps.alt ?? t("text-" + p.id + "-alt"),
     // ALT button on the ACTIVE slide only — the side slides are partially
     // visible click affordances and four floating buttons would be noise.
     // The preview button never renders inside a lightbox.
-    showAltButton: p.id === current.value?.id,
+    showAltButton: pictureId === current.value,
     previewable: false,
   } as FeatureAwarePictureProps;
 }
@@ -184,11 +185,11 @@ function sampleStageLuminance(): void {
     const img = currentStageImg();
     const src = img?.currentSrc || img?.src || null;
     if (!src) return;
-    const tokenId = current.value?.id;
+    const tokenId = current.value;
     const apply =
       (edge: "left" | "right" | "bottom") =>
       (dark: boolean): void => {
-        if (!tokenId || current.value?.id !== tokenId) return;
+        if (!tokenId || current.value !== tokenId) return;
         if (edge === "left") leftDark.value = dark;
         else if (edge === "right") rightDark.value = dark;
         else bottomDark.value = dark;
@@ -232,28 +233,28 @@ watch(
   { immediate: true },
 );
 
-/** Picture title shown in the chrome bar (config value, else `<id>-title`). */
+/** Picture title shown in the chrome bar (registry-resolved). */
 const title = computed(() =>
-  current.value
-    ? current.value.pictureProps.title || t(`text-${current.value.id}-title`)
-    : "",
+  current.value ? (resolvePicture(current.value).title ?? "") : "",
 );
 
 /**
- * QR centre icon — resolution: config icon (with id-derived alt) → default
- * signature.  NEVER the poster itself (keeps the full artwork out of the
- * share card).
+ * QR centre icon — resolution: the picture's `relatedLink.icon` (with an
+ * id-derived alt) → the default site signature.  NEVER the poster itself
+ * (keeps the full artwork out of the share card).
  */
 const qrIcon = computed<TypeAwareImageProps>(() => {
-  const p = current.value;
-  const configured = p?.qrCodeIcon;
+  const pictureId = current.value;
+  const configured = pictureId
+    ? resolvePicture(pictureId).relatedLink?.icon
+    : undefined;
   if (configured) {
     if (configured.type === "picture") {
       return {
         type: "picture",
         imgProps: {
           ...configured.imgProps,
-          alt: configured.imgProps.alt ?? t(`text-${p!.id}-title`),
+          alt: configured.imgProps.alt ?? t(`text-${pictureId}-title`),
         },
       };
     }
@@ -261,7 +262,7 @@ const qrIcon = computed<TypeAwareImageProps>(() => {
       type: "colored-img",
       imgProps: {
         ...configured.imgProps,
-        alt: configured.imgProps.alt ?? t(`text-${p!.id}-title`),
+        alt: configured.imgProps.alt ?? t(`text-${pictureId}-title`),
       },
     };
   }
@@ -277,8 +278,8 @@ const qrIcon = computed<TypeAwareImageProps>(() => {
 });
 
 /** Related link back to another page section (typed, on the picture props). */
-const relatedLink = computed<TypeAwareLinkProps | null>(
-  () => current.value?.pictureProps.relatedLink ?? null,
+const relatedLink = computed<TypeAwareLinkProps | null>(() =>
+  current.value ? (resolvePicture(current.value).relatedLink ?? null) : null,
 );
 
 /**
@@ -312,7 +313,8 @@ const cameFromAnotherPage = computed(() => {
 
 const shareUrl = computed(() => {
   const url = new URL(window.location.origin + window.location.pathname);
-  if (current.value) url.searchParams.set("preview", current.value.id);
+  if (groupId.value) url.searchParams.set("picGroupId", groupId.value);
+  if (current.value) url.searchParams.set("picId", current.value);
   const lang = route.query.lang;
   if (typeof lang === "string" && lang) url.searchParams.set("lang", lang);
   return url.toString();
@@ -322,14 +324,17 @@ const shareUrl = computed(() => {
 // Actions
 // =========================================================================
 
-/** Sync the ?preview= deep link with the current picture. */
-function syncPreview(): void {
-  const id = current.value?.id;
-  if (id) {
-    router.replace({
-      query: preserveLangParam({ ...route.query, preview: id }),
-    });
-  }
+/** Sync the `?picGroupId=` / `?picId=` deep link with the current picture. */
+function syncViewerParams(): void {
+  const id = current.value;
+  if (!id) return;
+  router.replace({
+    query: preserveLangParam({
+      ...route.query,
+      picGroupId: groupId.value || undefined,
+      picId: id,
+    }),
+  });
 }
 
 /**
@@ -343,18 +348,18 @@ function fallbackGoTo(delta: number): void {
   const target = (index.value + delta + len) % len;
   dir.value = target > index.value ? "next" : "prev";
   index.value = target;
-  syncPreview();
+  syncViewerParams();
 }
 
 /**
  * Swiper transition start — Swiper owns navigation; only update state when
  * the real index actually changed (loop reorders the slide DOM; ignore the
- * initial false slideChange) and mirror it to ?preview=.
+ * initial false slideChange) and mirror it to `?picId=`.
  */
 function onSlideChange(instance: SwiperClass): void {
   if (instance.realIndex === index.value) return;
   index.value = instance.realIndex;
-  syncPreview();
+  syncViewerParams();
 }
 
 function showQR(): void {
@@ -385,7 +390,7 @@ function goBack(): void {
  * Related-link click — only INTERNAL links dismiss the overlay: the
  * viewer is about to be replaced by its destination page, so the whole
  * stack is cleared and the navigation is deferred to the next tick (the
- * viewer-close URL cleanup, `stripPreview` → `router.replace`, runs in the
+ * viewer-close URL cleanup (the URL owner rewrites `router.replace`), runs in the
  * same flush and would otherwise cancel a synchronous push).
  *
  * External / email / anchor links keep the stack intact:
@@ -475,12 +480,12 @@ onBeforeUnmount(() => {
         @slide-change-transition-end="onSlideChangeEnd"
       >
         <SwiperSlide
-          v-for="p in contents"
-          :key="p.id"
+          v-for="pictureId in contents"
+          :key="pictureId"
           class="picture-viewer-slide"
         >
           <FeatureAwarePicture
-            v-bind="picturePropsOf(p)"
+            v-bind="picturePropsOf(pictureId)"
             class="picture-viewer-img no-copy"
           />
         </SwiperSlide>
@@ -502,7 +507,11 @@ onBeforeUnmount(() => {
         "
         @after-enter="sampleStageLuminance"
       >
-        <div :key="current?.id" ref="pictureWrapRef" class="picture-slide-wrap">
+        <div
+          :key="current ?? ''"
+          ref="pictureWrapRef"
+          class="picture-slide-wrap"
+        >
           <FeatureAwarePicture
             v-bind="pictureProps"
             class="picture-viewer-img no-copy"
@@ -599,7 +608,7 @@ onBeforeUnmount(() => {
             :aria-label="$t('text-share')"
             @click="showQR"
           >
-            <i class="bi bi-share"></i>
+            <i class="bi bi-share-fill"></i>
           </button>
         </TooltipTrigger>
         <TooltipTrigger :title="t('text-open-related-page')">

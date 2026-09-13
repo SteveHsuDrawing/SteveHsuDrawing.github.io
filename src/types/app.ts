@@ -111,32 +111,60 @@ export interface LinkButtonGroupData {
 }
 
 // =========================================================================
-// Picture-list data (Gallery page)
+// Picture registry & group pool
 // =========================================================================
 
-/** Picture descriptor — a single displayable poster in a gallery group. */
-export interface DisplayPictureData {
-  /**
-   * Unique id — i18n key suffix for the per-picture `-title` / `-alt` /
-   * `-message` fallbacks (e.g. `t("text-" + id + "-alt")`) and the
-   * lightbox deep-link target (`?preview=<id>`).
-   */
-  id: string;
-  /**
-   * FeatureAwarePictureProps for the poster — the picture's whole
-   * metadata lives here (`alt`, `title`, `message`, `relatedLink`).
-   * `alt` / `title` are optional — when omitted the card and the
-   * lightbox fall back to `t("text-" + id + "-alt")` /
-   * `t("text-" + id + "-title")`.  width/height are omitted (masonry CSS
-   * controls the layout) and `loading` defaults to lazy in the card
-   * component.
-   */
-  pictureProps: FeatureAwarePictureProps;
-  /** QR share-card centre overlay icon (picture or colored). */
-  qrCodeIcon?: TypeAwareImageProps;
+/**
+ * Identity keys owned by the picture registry — the picture's own
+ * information (sources, feature flags, alt / title / message, related
+ * link, aspect ratio).  Display keys (`width`, `height`, `class`,
+ * `loading`, `fetchpriority`, `showAltButton`, `previewable`) stay with
+ * the consumer that renders the picture.
+ */
+export interface RegistryPictureProps {
+  /** Structured multi-format source map (the registry owns the sources). */
+  srcMap: PictureSrcMap;
+  /** Feature flags driving theme / language resolution on `srcMap`. */
+  feature?: ImgFeature[];
+  /** Alt text — falls back to `text-<id>-alt` when omitted. */
+  alt?: string;
+  /** Title — falls back to `text-<id>-title` when omitted or empty. */
+  title?: string;
+  /** Short message — falls back to `text-<id>-message`. */
+  message?: string;
+  /** Typed link back to a related page or section. */
+  relatedLink?: TypeAwareLinkProps;
+  /** Explicit width ÷ height ratio, e.g. 3:4 → 0.75 (card placeholder). */
+  aspectRatio?: number;
 }
 
-/** Picture-list group descriptor — a titled gallery section. */
+/** One picture in `src/configs/picture-registry.json`. */
+export interface RegistryPictureEntry {
+  /**
+   * Unique picture id — the `text-<id>-*` i18n suffix, the group pool's
+   * reference and the `?picId=` lightbox target.
+   */
+  id: string;
+  /** The picture's identity (sources + own metadata). */
+  pictureProps: RegistryPictureProps;
+}
+
+/**
+ * Consumer overrides applied on top of a registry entry — display keys
+ * plus optional refinements.  `relatedLink` is shallow-merged into the
+ * registry's link (so a caller adds a flag like `noQRCode` without
+ * repeating the href); every other key replaces it.  `srcMap` is not
+ * overridable — the registry owns the sources.
+ */
+export type PicturePropsOverride = Omit<
+  Partial<FeatureAwarePictureProps>,
+  "srcMap" | "relatedLink"
+> & {
+  /** Shallow-merged into the registry's link (add flags or change href). */
+  relatedLink?: Partial<TypeAwareLinkProps>;
+};
+
+/** A picture group — one entry of `src/configs/picture-groups.json`. */
 export interface DisplayPictureGroupData {
   /**
    * i18n key suffix for the SectionHeading title (`t("text-" + id)`)
@@ -145,8 +173,14 @@ export interface DisplayPictureGroupData {
   id: string;
   /** HAST node for the group description (rendered like LinkCardGroup). */
   description?: HastNode | null;
-  /** Array of pictures within this group. */
-  contents: DisplayPictureData[];
+  /**
+   * Pages that render this group (e.g. `["gallery"]`).  The runtime
+   * ignores it; the build filters by it (unknown names are rejected by
+   * `tools/validate-picture-configs.mjs`).
+   */
+  pages: string[];
+  /** Picture ids resolved through the registry (order = render order). */
+  contents: string[];
 }
 
 // =========================================================================
@@ -287,6 +321,11 @@ export interface FeatureAwarePictureProps {
    * `FeatureAwarePicture` itself never renders it.
    */
   relatedLink?: TypeAwareLinkProps;
+  /**
+   * Registry id of the picture — carried for the lightbox (the opener
+   * writes it to `?picId=`), never rendered on the `<img>`.
+   */
+  pictureId?: string;
 }
 
 // -------------------------------------------------------------------------
@@ -460,10 +499,16 @@ export interface GitHubEventsModalProps {
 /** Props for PictureGroupViewerModal — stored in a modal-stack item. */
 export interface PictureGroupViewerModalProps {
   /**
-   * The group's pictures — the viewer navigates within this list
-   * (prev/next, keyboard arrows, touch swipe).
+   * Group id — the viewer writes it to `?picGroupId=` while the active
+   * picture follows in `?picId=`.
    */
-  contents: DisplayPictureData[];
+  groupId: string;
+  /**
+   * Picture ids of the group — the viewer navigates within this list
+   * (prev/next, keyboard arrows, touch swipe) and resolves each
+   * picture's props through the registry.
+   */
+  contents: string[];
   /** Id of the picture to display initially (deep-link target). */
   currentId: string;
 }

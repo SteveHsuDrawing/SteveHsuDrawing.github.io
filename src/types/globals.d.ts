@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 /**
  * Global type declarations for objects exposed on `window`.
  * These are set in `src/main.ts` for legacy compatibility.

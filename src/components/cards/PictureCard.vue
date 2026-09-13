@@ -1,15 +1,13 @@
 <!--
   PictureCard.vue — Single gallery picture card (masonry item).
   Renders a FeatureAwarePicture poster with the preview-only no-copy
-  treatment.  Click-to-open-lightbox is wired in Phase 2.
+  treatment.  The picture's props are resolved through the registry; the
+  card supplies the card-layer display keys only.
 -->
 <script setup lang="ts">
 import { computed } from "vue";
-import { useI18n } from "../../composables/useI18n";
-import type {
-  DisplayPictureData,
-  FeatureAwarePictureProps,
-} from "../../types/app";
+import { usePictureRegistry } from "../../composables/usePictureRegistry";
+import type { FeatureAwarePictureProps } from "../../types/app";
 import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
 
 // =========================================================================
@@ -17,46 +15,41 @@ import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
 // =========================================================================
 
 const props = defineProps<{
-  /** Picture data from the picture-list JSON config. */
-  picture: DisplayPictureData;
+  /** Picture id from the group pool. */
+  pictureId: string;
+  /** Owning group id (carried by the `select` event). */
+  groupId: string;
 }>();
 
 const emit = defineEmits<{
   /** Fired when the card is activated (click / Enter / Space). */
-  select: [picture: DisplayPictureData];
+  select: [pictureId: string, groupId: string];
 }>();
 
 // =========================================================================
 // State
 // =========================================================================
 
-const { t } = useI18n();
+const { pictureProps } = usePictureRegistry();
 
-/** Resolved alt text — explicit alt or i18n fallback from the id. */
-const alt = computed(
-  () =>
-    props.picture.pictureProps.alt ?? t("text-" + props.picture.id + "-alt"),
+/** Resolved FeatureAwarePicture props (registry + card display keys). */
+const imgProps = computed<FeatureAwarePictureProps>(() =>
+  pictureProps(props.pictureId, {
+    loading: "lazy",
+    class: "no-copy picture-card-img",
+  }),
 );
 
-/** Resolved FeatureAwarePicture props (alt, lazy loading, no-copy class). */
-const imgProps = computed<FeatureAwarePictureProps>(() => {
-  const base = props.picture.pictureProps;
-  const baseClass = typeof base.class === "string" ? base.class : "";
-  return {
-    ...base,
-    alt: alt.value,
-    loading: "lazy",
-    class: [baseClass, "no-copy", "picture-card-img"].filter(Boolean).join(" "),
-  };
-});
+/** Alt text (also the figure's aria-label). */
+const alt = computed(() => imgProps.value.alt ?? "");
 
 // =========================================================================
 // Actions
 // =========================================================================
 
-/** Open the lightbox for this picture (Phase 2). */
+/** Open the lightbox for this picture. */
 function onActivate(): void {
-  emit("select", props.picture);
+  emit("select", props.pictureId, props.groupId);
 }
 </script>
 

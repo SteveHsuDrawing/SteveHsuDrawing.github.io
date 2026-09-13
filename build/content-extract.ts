@@ -9,6 +9,7 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { BASE_URL } from "../src/configs/site-meta";
 
 // =========================================================================
 // JSON config types (subset of runtime types)
@@ -67,24 +68,29 @@ export interface LinkButtonGroup {
   buttons?: LinkButton[];
 }
 
-/** A single display picture (gallery). */
-export interface DisplayPicture {
+/** One picture of the registry (`src/configs/picture-registry.json`). */
+export interface RegistryPicture {
   id: string;
   pictureProps?: {
     srcMap?: unknown;
     feature?: string[];
+    alt?: string;
     /** Optional literal title (language-neutral pictures, e.g. "SELF"). */
     title?: string;
+    message?: string;
     relatedLink?: TypeAwareLink;
+    aspectRatio?: number;
   };
-  qrCodeIcon?: TypeAwareImage;
 }
 
-/** A group of display pictures. */
+/** A picture group (`src/configs/picture-groups.json`). */
 export interface DisplayPictureGroup {
   id: string;
   description?: HastNode | null;
-  contents?: DisplayPicture[];
+  /** Pages that render this group (build-time filter). */
+  pages?: string[];
+  /** Picture ids, resolved through the registry. */
+  contents?: string[];
 }
 
 // =========================================================================
@@ -148,6 +154,32 @@ function loadJson<T>(pageName: string, dir: string): T[] | null {
   }
 }
 
+/**
+ * Load one shared (page-independent) config file under `src/configs`.
+ * @param file - File name (e.g. "picture-groups.json").
+ * @returns The parsed array, or `null` when the file does not exist.
+ */
+function loadSingleton<T>(file: string): T[] | null {
+  const path = resolve(process.cwd(), "src/configs", file);
+  try {
+    return JSON.parse(readFileSync(path, "utf-8")) as T[];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Absolute URL of a page — the text / markdown renderers use it to
+ * absolutize same-page query links (a bare `?picGroupId=…` is useless in
+ * `*.html.md` / `llms.txt`).
+ *
+ * @param pageName - Page name (e.g. "gallery"); the index page is "index".
+ * @returns The absolute page URL (no trailing slash).
+ */
+export function pageUrl(pageName: string): string {
+  return `${BASE_URL}${pageName === "index" ? "/" : `/${pageName}.html`}`;
+}
+
 /** Load the link-card groups for a page (or `null` when none exist). */
 export function loadLinkCardGroups(pageName: string): LinkCardGroup[] | null {
   return loadJson<LinkCardGroup>(pageName, "link-cards");
@@ -160,9 +192,12 @@ export function loadLinkButtonGroups(
   return loadJson<LinkButtonGroup>(pageName, "link-button-groups");
 }
 
-/** Load the picture-list groups for a page (or `null` when none exist). */
-export function loadPictureGroups(
-  pageName: string,
-): DisplayPictureGroup[] | null {
-  return loadJson<DisplayPictureGroup>(pageName, "picture-list");
+/** Load the whole picture group pool (or `null` when the file is absent). */
+export function loadPictureGroups(): DisplayPictureGroup[] | null {
+  return loadSingleton<DisplayPictureGroup>("picture-groups.json");
+}
+
+/** Load the picture registry (or `null` when the file is absent). */
+export function loadPictureRegistry(): RegistryPicture[] | null {
+  return loadSingleton<RegistryPicture>("picture-registry.json");
 }

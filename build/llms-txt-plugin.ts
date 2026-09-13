@@ -16,19 +16,22 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Plugin, ResolvedConfig } from "vite";
-import { PAGE_META } from "./site-meta";
 import { BASE_URL, SITE_NAME } from "../src/configs/site-meta";
 import { extractPlainText } from "../src/core/utils";
 import {
-  loadLinkCardGroups,
-  loadLinkButtonGroups,
-  loadPictureGroups,
-  textFor,
-  textForTitle,
-  type LinkCardGroup,
-  type LinkButtonGroup,
-  type DisplayPictureGroup,
+    loadLinkButtonGroups,
+    loadLinkCardGroups,
+    loadPictureGroups,
+    loadPictureRegistry,
+    pageUrl,
+    textFor,
+    textForTitle,
+    type DisplayPictureGroup,
+    type LinkButtonGroup,
+    type LinkCardGroup,
+    type RegistryPicture,
 } from "./content-extract";
+import { PAGE_META } from "./site-meta";
 import type { PageMetaEntry } from "./types";
 
 // =========================================================================
@@ -115,8 +118,9 @@ function generateLlmsTxt(): string {
 // Markdown page versions
 // =========================================================================
 
-/** Render link-card groups as markdown file lists. */
-function renderCardGroups(groups: LinkCardGroup[]): string {
+/** Render link-card groups as markdown file lists (relative hrefs resolved). */
+function renderCardGroups(groups: LinkCardGroup[], pageName: string): string {
+  const base = pageUrl(pageName);
   const parts: string[] = [];
   for (const group of groups) {
     const groupTitle = textFor(group.id);
@@ -127,7 +131,8 @@ function renderCardGroups(groups: LinkCardGroup[]): string {
         const cardTitle = textForTitle(card.id);
         const cardHref = card.titleLink?.href;
         const cardDesc = extractPlainText(card.description);
-        const link = cardHref ? `[${cardTitle}](${cardHref})` : cardTitle;
+        const href = cardHref?.startsWith("?") ? base + cardHref : cardHref;
+        const link = href ? `[${cardTitle}](${href})` : cardTitle;
         const descPart = cardDesc ? `: ${cardDesc}` : "";
         parts.push(`- ${link}${descPart}`);
       }
@@ -161,8 +166,18 @@ function renderButtonGroups(groups: LinkButtonGroup[]): string {
   return parts.join("\n").trimEnd();
 }
 
-/** Render picture-list groups as markdown file lists (id → relatedLink). */
-function renderPictureGroups(groups: DisplayPictureGroup[]): string {
+/**
+ * Render picture groups as markdown file lists (picture ids resolved
+ * through the registry; `relatedLink.href` is the link target).
+ *
+ * @param groups - The pool, already filtered to this page.
+ * @param pictures - The picture registry.
+ */
+function renderPictureGroups(
+  groups: DisplayPictureGroup[],
+  pictures: RegistryPicture[],
+): string {
+  const byId = new Map(pictures.map((picture) => [picture.id, picture]));
   const parts: string[] = [];
   for (const group of groups) {
     const groupTitle = textFor(group.id);
@@ -171,11 +186,13 @@ function renderPictureGroups(groups: DisplayPictureGroup[]): string {
     const description = extractPlainText(group.description);
     if (description) parts.push(description, "");
     if (group.contents && group.contents.length > 0) {
-      for (const pic of group.contents) {
-        // Per-picture title key (`text-<id>-title`); a literal title in
-        // the config wins (language-neutral pictures such as "SELF").
-        const title = pic.pictureProps?.title || textFor(pic.id + "-title");
-        const href = pic.pictureProps?.relatedLink?.href;
+      for (const pictureId of group.contents) {
+        const picture = byId.get(pictureId);
+        if (!picture) continue;
+        // Per-picture title key (`text-<id>-title`); a registry title wins
+        // (language-neutral pictures such as "SELF").
+        const title = picture.pictureProps?.title || textFor(pictureId + "-title");
+        const href = picture.pictureProps?.relatedLink?.href;
         parts.push(href ? `- [${title}](${href})` : `- ${title}`);
       }
       parts.push("");
@@ -207,7 +224,7 @@ function pageBody(pageName: string): string {
 
   const cards = loadLinkCardGroups(pageName);
   if (cards) {
-    const md = renderCardGroups(cards);
+    const md = renderCardGroups(cards, pageName);
     if (md) parts.push(md);
   }
 
@@ -217,9 +234,13 @@ function pageBody(pageName: string): string {
     if (md) parts.push(md);
   }
 
-  const pictures = loadPictureGroups(pageName);
-  if (pictures) {
-    const md = renderPictureGroups(pictures);
+  const pool = loadPictureGroups();
+  const registry = loadPictureRegistry();
+  const pictures = pool?.filter((group) =>
+    (group.pages ?? []).includes(pageName),
+  );
+  if (pictures && pictures.length > 0 && registry) {
+    const md = renderPictureGroups(pictures, registry);
     if (md) parts.push(md);
   }
 

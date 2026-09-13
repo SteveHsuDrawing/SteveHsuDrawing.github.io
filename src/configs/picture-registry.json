@@ -1,0 +1,384 @@
+[
+  {
+    "id": "illustration-0",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": { "en": "/images/avif/covers/illustration-0-light.avif" },
+          "dark": { "en": "/images/avif/covers/illustration-0-dark.avif" }
+        },
+        "webp": {
+          "light": { "en": "/images/webp/covers/illustration-0-light.webp" },
+          "dark": { "en": "/images/webp/covers/illustration-0-dark.webp" }
+        }
+      },
+      "feature": ["follow-theme"],
+      "relatedLink": {
+        "type": "external",
+        "href": "https://www.pixiv.net/artworks/145641748",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/pixiv.webp",
+            "alt": "Pixiv"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "illustration-1",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": { "en": "/images/avif/covers/illustration-1.avif" }
+        },
+        "webp": { "light": { "en": "/images/webp/covers/illustration-1.webp" } }
+      },
+      "title": "SELF",
+      "relatedLink": {
+        "type": "external",
+        "href": "https://www.pixiv.net/artworks/144184773",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/pixiv.webp",
+            "alt": "Pixiv"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "illustration-2",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": { "en": "/images/avif/covers/illustration-2.avif" }
+        },
+        "webp": { "light": { "en": "/images/webp/covers/illustration-2.webp" } }
+      },
+      "relatedLink": {
+        "type": "internal",
+        "href": "/gallery.html?picGroupId=sticker-collections&picId=sticker-collection-series-1-vol-1"
+      }
+    }
+  },
+  {
+    "id": "illustration-3",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": { "en": "/images/avif/covers/illustration-3.avif" }
+        },
+        "webp": { "light": { "en": "/images/webp/covers/illustration-3.webp" } }
+      },
+      "relatedLink": {
+        "type": "internal",
+        "href": "/gallery.html?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-2"
+      }
+    }
+  },
+  {
+    "id": "artworks",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": { "en": "/images/avif/covers/artworks-light.avif" },
+          "dark": { "en": "/images/avif/covers/artworks-dark.avif" }
+        },
+        "webp": {
+          "light": { "en": "/images/webp/covers/artworks-light.webp" },
+          "dark": { "en": "/images/webp/covers/artworks-dark.webp" }
+        }
+      },
+      "feature": ["follow-theme"]
+    }
+  },
+  {
+    "id": "blogs",
+    "pictureProps": {
+      "srcMap": {
+        "avif": { "light": { "en": "/images/avif/covers/blogs.avif" } },
+        "webp": { "light": { "en": "/images/webp/covers/blogs.webp" } }
+      }
+    }
+  },
+  {
+    "id": "chatting",
+    "pictureProps": {
+      "srcMap": {
+        "avif": { "light": { "en": "/images/avif/covers/chatting.avif" } },
+        "webp": { "light": { "en": "/images/webp/covers/chatting.webp" } }
+      }
+    }
+  },
+  {
+    "id": "projects",
+    "pictureProps": {
+      "srcMap": {
+        "avif": { "light": { "en": "/images/avif/covers/projects.avif" } },
+        "webp": { "light": { "en": "/images/webp/covers/projects.webp" } }
+      }
+    }
+  },
+  {
+    "id": "worldview-0",
+    "pictureProps": {
+      "srcMap": {
+        "avif": { "light": { "en": "/images/avif/covers/worldview-0.avif" } },
+        "webp": { "light": { "en": "/images/webp/covers/worldview-0.webp" } }
+      },
+      "relatedLink": {
+        "type": "external",
+        "href": "https://www.pixiv.net/artworks/149435832",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/pixiv.webp",
+            "alt": "Pixiv"
+          }
+        },
+        "noQRCode": true
+      }
+    }
+  },
+  {
+    "id": "worldview-1",
+    "pictureProps": {
+      "srcMap": {
+        "avif": { "light": { "en": "/images/avif/covers/worldview-1.avif" } },
+        "webp": { "light": { "en": "/images/webp/covers/worldview-1.webp" } }
+      },
+      "relatedLink": {
+        "type": "external",
+        "href": "https://www.pixiv.net/artworks/149401566",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/pixiv.webp",
+            "alt": "Pixiv"
+          }
+        },
+        "noQRCode": true
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-1-vol-1",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-1-vol-1.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-1-vol-1.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-1-vol-1.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-1-vol-1.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-1-vol-1.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-1-vol-2",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-1-vol-2.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-1-vol-2.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-1-vol-2.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-1-vol-2.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-1-vol-2.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-1-vol-3",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-1-vol-3.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-1-vol-3.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-1-vol-3.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-1-vol-3.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-1-vol-3.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-2-vol-1",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-2-vol-1.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-2-vol-1.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-2-vol-1.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-2-vol-1.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-2-vol-1.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-2-vol-2",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-2-vol-2.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-2-vol-2.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-2-vol-2.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-2-vol-2.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-2-vol-2.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-2-vol-3",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-2-vol-3.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-2-vol-3.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-2-vol-3.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-2-vol-3.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-2-vol-3.webp"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "sticker-collection-series-2-vol-4",
+    "pictureProps": {
+      "srcMap": {
+        "avif": {
+          "light": {
+            "en": "/images/avif/posters/en/sticker-collection-series-2-vol-4.avif",
+            "zh-Hans": "/images/avif/posters/zh-Hans/sticker-collection-series-2-vol-4.avif"
+          }
+        },
+        "webp": {
+          "light": {
+            "en": "/images/webp/posters/en/sticker-collection-series-2-vol-4.webp",
+            "zh-Hans": "/images/webp/posters/zh-Hans/sticker-collection-series-2-vol-4.webp"
+          }
+        }
+      },
+      "feature": ["follow-language"],
+      "aspectRatio": 0.75,
+      "relatedLink": {
+        "type": "internal",
+        "href": "/artworks-and-videos.html#sticker-collections",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-2-vol-4.webp"
+          }
+        }
+      }
+    }
+  }
+]

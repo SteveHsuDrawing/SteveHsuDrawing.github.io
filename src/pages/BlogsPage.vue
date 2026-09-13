@@ -8,6 +8,10 @@ import LinkCardGroups from "../components/cards/LinkCardGroups.vue";
 import PageChainNav from "../components/nav/PageChainNav.vue";
 import HeroSection from "../components/ui/HeroSection.vue";
 import { useLinkCards } from "../composables/useLinkCards";
+import { usePictureRegistry } from "../composables/usePictureRegistry";
+
+// Picture registry — resolves the hero cover props.
+const { pictureProps } = usePictureRegistry();
 
 // =========================================================================
 // Link cards
@@ -21,16 +25,7 @@ const { groups, pagePath } = useLinkCards(ref("blogs-and-sponsor"));
   <HeroSection
     :title="$t('text-blogs-and-sponsor')"
     :description="$t('text-blogs-and-sponsor-description')"
-    :image="{
-      srcMap: {
-        avif: { light: { en: '/images/avif/covers/blogs.avif' } },
-        webp: { light: { en: '/images/webp/covers/blogs.webp' } },
-      },
-      alt: $t('text-blogs-alt'),
-      title: $t('text-blogs-title'),
-      showAltButton: true,
-      previewable: true,
-    }"
+    :image="pictureProps('blogs', { showAltButton: true, previewable: true })"
   />
 
   <PageChainNav page-name="blogs-and-sponsor" />

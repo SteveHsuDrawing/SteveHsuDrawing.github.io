@@ -101,11 +101,11 @@ export const router = createRouter({
     }
     if (to.path === from.path && !to.hash) {
       // Same-page query-only navigation: preserve scroll for in-place
-      // language switches (?lang=) and the lightbox (?preview= open /
-      // prev / next / close, ?picGroupId= entry).  Other same-page link
+      // language switches (?lang=) and the lightboxes (?picGroupId= /
+      // ?picId= open / prev / next / close).  Other same-page link
       // clicks fall through and scroll to top (pre-v3.9.1 behavior).
       if (
-        to.query.preview !== from.query.preview ||
+        to.query.picId !== from.query.picId ||
         to.query.picGroupId !== from.query.picGroupId ||
         to.query.lang !== from.query.lang
       ) {

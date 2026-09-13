@@ -260,7 +260,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-1-vol-1"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-1-vol-1"
         },
         "description": {
           "type": "root",
@@ -328,7 +328,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-1-vol-2"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-1-vol-2"
         },
         "description": {
           "type": "root",
@@ -396,7 +396,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-1-vol-3"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-1-vol-3"
         },
         "description": {
           "type": "root",
@@ -464,7 +464,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-2-vol-1"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-1"
         },
         "description": {
           "type": "root",
@@ -565,7 +565,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-2-vol-2"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-2"
         },
         "description": {
           "type": "root",
@@ -666,7 +666,7 @@
         },
         "titleLink": {
           "type": "internal",
-          "href": "/gallery.html?preview=sticker-collection-series-2-vol-3"
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-3"
         },
         "description": {
           "type": "root",
@@ -751,6 +751,38 @@
               ],
               "properties": {
                 "dataI18n": "text-available-on-part-2"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "sticker-collection-series-2-vol-4",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/sticker-collection-series-2-vol-4.webp",
+            "class": "no-copy"
+          }
+        },
+        "titleLink": {
+          "type": "internal",
+          "href": "?picGroupId=sticker-collections&picId=sticker-collection-series-2-vol-4"
+        },
+        "description": {
+          "type": "root",
+          "children": [
+            {
+              "type": "element",
+              "tagName": "span",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Coming soon"
+                }
+              ],
+              "properties": {
+                "dataI18n": "text-coming-soon"
               }
             }
           ]

@@ -8,11 +8,7 @@ import { computed } from "vue";
 import { useBreakpoint } from "../../composables/useBreakpoint";
 import { useI18n } from "../../composables/useI18n";
 import { resolveI18nInHtml } from "../../core/utils";
-import type {
-  Breakpoint,
-  DisplayPictureData,
-  DisplayPictureGroupData,
-} from "../../types/app";
+import type { Breakpoint, DisplayPictureGroupData } from "../../types/app";
 import SectionHeading from "../ui/SectionHeading.vue";
 import PictureCard from "./PictureCard.vue";
 
@@ -41,7 +37,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   /** Fired when a picture card is activated. */
-  select: [picture: DisplayPictureData];
+  select: [pictureId: string, groupId: string];
 }>();
 
 // =========================================================================
@@ -70,9 +66,9 @@ const hasContents = computed(
  * Row-wise masonry columns: distribute contents round-robin into N column
  * arrays (`item i → column i % N`) so items read left-to-right row by row.
  */
-const columns = computed<DisplayPictureData[][]>(() => {
+const columns = computed<string[][]>(() => {
   const count = COLUMN_COUNTS[breakpoint.value];
-  const cols: DisplayPictureData[][] = Array.from({ length: count }, () => []);
+  const cols: string[][] = Array.from({ length: count }, () => []);
   (props.group.contents ?? []).forEach((item, i) => {
     cols[i % count].push(item);
   });
@@ -96,10 +92,11 @@ const columns = computed<DisplayPictureData[][]>(() => {
     <div v-if="hasContents" class="picture-columns">
       <div v-for="(col, ci) in columns" :key="ci" class="picture-column">
         <PictureCard
-          v-for="item in col"
-          :key="item.id"
-          :picture="item"
-          @select="emit('select', $event)"
+          v-for="itemId in col"
+          :key="itemId"
+          :picture-id="itemId"
+          :group-id="props.group.id"
+          @select="emit('select', $event, props.group.id)"
         />
       </div>
     </div>
