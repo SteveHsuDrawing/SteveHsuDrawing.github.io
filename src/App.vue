@@ -62,6 +62,7 @@ import {
 } from "./platform/accessibility";
 import { initBootstrapCSSDetection } from "./platform/bootstrap-css-detection";
 import { initNoCopyProtection } from "./platform/no-copy";
+import { initServiceWorker } from "./platform/service-worker";
 
 // =========================================================================
 // State
@@ -241,6 +242,7 @@ onMounted(async () => {
     initBootstrapCSSDetection();
     initInputModalityDetection();
     initNoCopyProtection();
+    initServiceWorker();
     initLang();
     await nextTick();
     initHashChangeScroll();
