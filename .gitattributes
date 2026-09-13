@@ -1,0 +1,20 @@
+# Line-ending policy: LF in the repository AND in every working tree
+# (overrides core.autocrlf for all clones and CI checkouts — see also
+# .editorconfig for the editor side).
+#
+# `.cmd` / `.bat` are the legacy CRLF exception — prefer `.py` / `.mjs`
+# for new tool scripts (see the general-file-rules instruction doc).
+
+* text=auto eol=lf
+
+# Shell scripts and Git hooks must never be CRLF
+# ("$'\r': command not found" / "bad interpreter").
+*.sh text eol=lf
+.husky/* text eol=lf
+
+# Windows batch scripts — legacy, CRLF (cmd.exe).
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files that must never be normalized.
+*.lnk binary
