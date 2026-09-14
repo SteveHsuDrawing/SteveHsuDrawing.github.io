@@ -96,3 +96,11 @@ All original artworks in `public/images/` (including covers, icons, and
 stickers) are created by **Steve Hsu (什五)**. See
 [public/images/README.md](public/images/README.md) for the full copyright
 notice and usage restrictions.
+
+## 5. License
+
+This project is **source-available, not open source**. All rights are
+reserved; see [LICENSE.md](LICENSE.md) for the terms covering the source
+code and other repository content. Original artworks are governed by a
+separate notice (see [§4](#4-copyright) and
+[public/images/README.md](public/images/README.md)).
