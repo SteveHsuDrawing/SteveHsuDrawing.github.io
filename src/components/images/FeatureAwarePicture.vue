@@ -14,12 +14,13 @@
   Overlay controls (opt-in): with `showAltButton` and/or `previewable`
   the component wraps the image in a positioned box and adds corner
   controls on the bottom edge — an ALT button opening a BPopover with
-  the picture title (falling back to the generic description label) and
-  the image description, and a preview button opening the single-image
-  viewer.  Without those flags the rendered DOM is unchanged (a bare
-  <picture> / <img> root) — every legacy consumer relies on that.
-  `message` / `relatedLink` are carried for the lightboxes only; this
-  component renders neither.
+  the picture title (falling back to the generic description label),
+  the image description and the optional `message` as its secondary
+  line, and a preview button opening the single-image viewer.  Without
+  those flags the rendered DOM is unchanged (a bare <picture> / <img>
+  root) — every legacy consumer relies on that.  `relatedLink` is
+  carried for the lightboxes only; `message` renders only in the ALT
+  popover.
 -->
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
@@ -307,6 +308,9 @@ watch([resolvedImgSrc, resolvedAvifSrc], () => {
           </button>
         </template>
         {{ alt }}
+        <div v-if="message" class="picture-alt-popover-message">
+          <i>{{ message }}</i>
+        </div>
       </BPopover>
       <button
         v-if="previewable"
@@ -470,13 +474,24 @@ html.user-input-keyboard .picture-overlay-btn {
   filter: invert(1);
 }
 
+/* --- ALT popover content ---
+   Secondary line under the alt text — the picture `message`, when
+   present.  Lives inside the teleported popover body; the slot content
+   keeps this component's scope attribute, so the scoped rule matches. */
+.picture-alt-popover-message {
+  margin-top: 0.25rem;
+  color: var(--bs-secondary-color);
+}
+
 /* --- Image placeholder (reserved-space reservation + shimmer) ---
    Applies to imgs with a reserved layout space — either an explicit
    `aspectRatio` (ratio box, e.g. gallery posters) OR both `width`
    and `height` (fixed pixel box, e.g. HeroSection).  While the lazy
    image is still downloading the slot shows a themed shimmer; on
-   load the shimmer background is removed and a short reveal
-   animation fades the image in.  Browsers without CSS
+   load the shimmer background is removed and the base opacity
+   transition fades the image in (the former reveal animation was
+   removed in v3.16.2 — Firefox could freeze it at an intermediate
+   opacity).  Browsers without CSS
    `aspect-ratio` skip the ratio box (progressive enhancement).
    NOTE: the shimmer is the element's own background — keep
    `opacity: 1` here, an element-level opacity would hide the
@@ -497,7 +512,6 @@ html.user-input-keyboard .picture-overlay-btn {
 
 .img-loading-placeholder[data-img-loaded] {
   background: none;
-  animation: picture-reveal 0.2s ease;
 }
 
 @keyframes picture-shimmer {
@@ -509,21 +523,8 @@ html.user-input-keyboard .picture-overlay-btn {
   }
 }
 
-@keyframes picture-reveal {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .img-loading-placeholder:not([data-img-loaded]) {
-    animation: none;
-  }
-
-  .img-loading-placeholder[data-img-loaded] {
     animation: none;
   }
 }

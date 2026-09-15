@@ -317,9 +317,8 @@ export interface FeatureAwarePictureProps {
    */
   title?: string;
   /**
-   * Short message shown under the picture by the single-image lightbox.
-   * Carried here so the lightbox needs no second channel —
-   * `FeatureAwarePicture` itself never renders it.
+   * Short message shown as the ALT popover's secondary line (when
+   * non-empty) and under the picture by the single-image lightbox.
    */
   message?: string;
   /**
