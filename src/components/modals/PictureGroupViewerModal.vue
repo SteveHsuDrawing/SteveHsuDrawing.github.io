@@ -820,6 +820,7 @@ onBeforeUnmount(() => {
   /* Neutral theme tint while the luminance is unknown; the shared
      on-image palette overrides once sampled (bottom edge). */
   background: var(--shlh-on-image-bar-bg, rgba(var(--bs-body-color-rgb), 0.15));
+  backdrop-filter: blur(0.5rem);
   color: var(--shlh-on-image-control-color, var(--bs-body-color));
   border-radius: var(--bs-border-radius);
   font-size: 0.8rem;
