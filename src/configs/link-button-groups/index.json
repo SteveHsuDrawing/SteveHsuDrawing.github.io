@@ -61,15 +61,15 @@
         "sameAs": true
       },
       {
-        "id": "weibo",
+        "id": "rednote",
         "link": {
           "type": "external",
-          "href": "https://weibo.com/stevehsudrawing"
+          "href": "https://www.xiaohongshu.com/user/profile/6a3004dd0000000010000000"
         },
         "icon": {
           "type": "picture",
           "imgProps": {
-            "src": "/images/webp/icons/weibo.webp"
+            "src": "/images/webp/icons/rednote.webp"
           }
         },
         "sameAs": true

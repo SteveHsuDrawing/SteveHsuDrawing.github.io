@@ -109,42 +109,24 @@
         }
       },
       {
-        "id": "weibo",
+        "id": "bluesky",
         "icon": {
           "type": "picture",
           "imgProps": {
-            "src": "/images/webp/icons/weibo.webp"
+            "src": "/images/webp/icons/bluesky.webp"
           }
         },
         "titleLink": {
           "type": "external",
-          "href": "https://weibo.com/stevehsudrawing"
+          "href": "https://bsky.app/profile/stevehsudrawing.bsky.social"
         },
         "description": {
-          "type": "root",
+          "type": "element",
+          "tagName": "span",
           "children": [
             {
-              "type": "element",
-              "tagName": "span",
-              "children": [
-                {
-                  "type": "text",
-                  "value": "Name"
-                }
-              ],
-              "properties": {
-                "dataI18n": "text-name"
-              }
-            },
-            {
-              "type": "element",
-              "tagName": "span",
-              "children": [
-                {
-                  "type": "text",
-                  "value": ": SteveHsu什五 | UID: 6053515220"
-                }
-              ]
+              "type": "text",
+              "value": "UID: stevehsudrawing.bsky.social"
             }
           ]
         }
@@ -225,6 +207,47 @@
                 {
                   "type": "text",
                   "value": ": SteveHsu什五 | UID: stevehsudrawing"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "weibo",
+        "icon": {
+          "type": "picture",
+          "imgProps": {
+            "src": "/images/webp/icons/weibo.webp"
+          }
+        },
+        "titleLink": {
+          "type": "external",
+          "href": "https://weibo.com/stevehsudrawing"
+        },
+        "description": {
+          "type": "root",
+          "children": [
+            {
+              "type": "element",
+              "tagName": "span",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Name"
+                }
+              ],
+              "properties": {
+                "dataI18n": "text-name"
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "span",
+              "children": [
+                {
+                  "type": "text",
+                  "value": ": SteveHsu什五 | UID: 6053515220"
                 }
               ]
             }
@@ -778,11 +801,80 @@
               "children": [
                 {
                   "type": "text",
-                  "value": "Coming soon"
+                  "value": "Available on "
                 }
               ],
               "properties": {
-                "dataI18n": "text-coming-soon"
+                "dataI18n": "text-available-on-part-1"
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "a",
+              "properties": {
+                "href": "https://zb.vip.qq.com/hybrid/emoticonmall/detail?id=248730",
+                "className": ["external-link"]
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "QQ"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "span",
+              "children": [
+                {
+                  "type": "text",
+                  "value": " and "
+                }
+              ],
+              "properties": {
+                "dataI18n": "text-and"
+              }
+            },
+            {
+              "type": "element",
+              "tagName": "a",
+              "properties": {
+                "href": "https://sticker.weixin.qq.com/cgi-bin/mmemoticon-bin/emoticonview?oper=single&t=shop/detail&productid=aL2PCfwK/89qO7sF6/+I+UDhfwEjhec2ZNvdnLLJRd/NWqdyAoSj2rNVfD76xTK4XfM7IEvFQ3Ch3smdBCwHRb72b7ONQB+yfpY1+b1K+Sa4=",
+                "className": ["external-link"]
+              },
+              "children": [
+                {
+                  "type": "element",
+                  "tagName": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "WeChat"
+                    }
+                  ],
+                  "properties": {
+                    "dataI18n": "text-wechat"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "tagName": "span",
+              "children": [
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ],
+              "properties": {
+                "dataI18n": "text-available-on-part-2"
               }
             }
           ]

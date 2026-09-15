@@ -532,6 +532,12 @@ export interface PictureViewerModalProps {
   img: FeatureAwarePictureProps;
 }
 
+/** Props for StickerModal — stored in a modal-stack item. */
+export interface StickerModalProps {
+  /** Sticker id override; omitted = a random pool member is picked. */
+  stickerId?: string;
+}
+
 /** Modal component identifiers in the modal stack. */
 export type ModalId =
   | "external-link"
@@ -556,7 +562,7 @@ export type ModalStackItem =
   | { id: "picture-viewer"; props: PictureViewerModalProps }
   | { id: "settings"; props: null }
   | { id: "reset-warning"; props: null }
-  | { id: "sticker"; props: null };
+  | { id: "sticker"; props: StickerModalProps | null };
 
 // =========================================================================
 // Provide / inject keys (cross-component communication)

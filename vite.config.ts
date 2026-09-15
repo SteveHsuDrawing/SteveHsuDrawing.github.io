@@ -9,6 +9,7 @@ import { headTagsPlugin } from "./build/head-tags-plugin";
 import { llmsTxtPlugin } from "./build/llms-txt-plugin";
 import { minifyPlugin } from "./build/minify-plugin";
 import { sitemapPlugin } from "./build/sitemap-plugin";
+import { swScopePlugin } from "./build/sw-scope-plugin";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -28,6 +29,7 @@ export default defineConfig({
     minifyPlugin(),
     sitemapPlugin(),
     llmsTxtPlugin(),
+    swScopePlugin(),
   ],
 
   server: {

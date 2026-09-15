@@ -3,11 +3,12 @@
   Visibility comes from the shared modal stack (useStackModal).
   The title is a non-i18n terminal line (deliberate exception — the
   near-future system-message aesthetic is language-neutral): `< Response`
-  (`<` marks system output, character-agnostic).  The shown sticker id is
-  a module-level constant so future expressions are a one-line change.
+  (`<` marks system output, character-agnostic).  The shown sticker is
+  picked per open from the v3.16.1 pool — a random member by default,
+  overridable via the stack item's `stickerId`.
 -->
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "../../composables/useI18n";
 import { useModalFocus } from "../../composables/useModalFocus";
 import { useModalStack, useStackModal } from "../../composables/useModalStack";
@@ -19,8 +20,19 @@ import FeatureAwarePicture from "../images/FeatureAwarePicture.vue";
 // Constants
 // =========================================================================
 
-/** Sticker shown by this modal (module-level constant — add expressions here). */
-const STICKER_ID = "observing";
+/**
+ * Random pool of stickers (the v3.16.1 roster) — one member is picked
+ * per open; an explicit `stickerId` from the stack item overrides it.
+ */
+const STICKER_POOL = [
+  "observing",
+  "thumb",
+  "offering-tea",
+  "right",
+  "typing",
+  "thinking",
+  "low-battery",
+] as const;
 
 /** Celebration confetti colors — the profile major colors. */
 const STICKER_COLORS = ["#47c4ee", "#3c96ff"];
@@ -35,9 +47,25 @@ const STICKER_MODAL_TITLE = "Response";
 // State
 // =========================================================================
 
-const { visible } = useStackModal("sticker");
+const { visible, props: stackProps } = useStackModal("sticker");
 const { pop } = useModalStack();
 const { t } = useI18n();
+
+/** Sticker shown while the modal is open (rolled once per open). */
+const stickerId = ref<string>(STICKER_POOL[0]);
+
+/**
+ * Roll the shown sticker on every open: the stack item's explicit
+ * `stickerId` when given, otherwise a random pool member.
+ */
+watch(visible, (isVisible) => {
+  if (!isVisible) return;
+  const explicit = stackProps.value?.stickerId;
+  stickerId.value =
+    explicit && (STICKER_POOL as readonly string[]).includes(explicit)
+      ? explicit
+      : STICKER_POOL[Math.floor(Math.random() * STICKER_POOL.length)];
+});
 
 /** Close-button element for keyboard auto-focus. */
 const closeBtnRef = ref<HTMLElement | null>(null);
@@ -58,16 +86,16 @@ function onShown(): void {
 }
 
 /** Theme/format-aware source map for the sticker. */
-const stickerSrcMap = computed(() => createStickerSrcMap(STICKER_ID));
+const stickerSrcMap = computed(() => createStickerSrcMap(stickerId.value));
 
 /** Alt text for the sticker. */
-const stickerAlt = computed(() => t(`text-sticker-${STICKER_ID}-alt`));
+const stickerAlt = computed(() => t(`text-sticker-${stickerId.value}-alt`));
 
 /** Title for the ALT popover header. */
-const stickerTitle = computed(() => t(`text-sticker-${STICKER_ID}-title`));
+const stickerTitle = computed(() => t(`text-sticker-${stickerId.value}-title`));
 
 /** Short line shown below the sticker. */
-const message = computed(() => t(`text-sticker-${STICKER_ID}-message`));
+const message = computed(() => t(`text-sticker-${stickerId.value}-message`));
 </script>
 
 <template>

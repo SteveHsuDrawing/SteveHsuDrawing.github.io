@@ -3,10 +3,12 @@
  *
  * Three jobs, nothing else:
  *
- *   1. Tab navigations into /images/** get a synthetic 403 page
- *      (`/403.html`) — a client-side deterrence (§ 4.2.7 copy
- *      protection; a real edge rule is `future.md` § 5).  The two
- *      notice files stay reachable.
+ *   1. Tab navigations into a protected /images/** path get a synthetic
+ *      403 page (`/403.html`) — the protected set is the glob list in
+ *      `BLOCK_PATTERNS`, injected at build / dev-serve time from
+ *      `public/images/README.md` by `build/sw-scope-plugin.ts`
+ *      (§ 4.2.7 copy protection; a real edge rule is `future.md`
+ *      § 5).  The two notice files stay reachable.
  *   2. Other tab navigations are network-first: the fresh HTML is
  *      cached per pathname, an offline request falls back to that
  *      cache — then to `error-offline.html`, served plainly as 200
@@ -23,12 +25,23 @@
  * assets (stale `shlh-*` caches are deleted on activate).
  */
 
-const CACHE_VERSION = "3.16.0";
+const CACHE_VERSION = "3.16.1";
 const HTML_CACHE = `shlh-html-${CACHE_VERSION}`;
 const STATIC_CACHE = `shlh-static-${CACHE_VERSION}`;
 
 /** Page paths that bypass the image-navigation block (copyright notices). */
 const NOTICE_PATHS = new Set(["/images/llms.txt", "/images/README.md"]);
+
+/**
+ * Glob patterns of the works documented in `public/images/README.md`
+ * (relative to `/images/`), injected at build / dev-serve time by
+ * `build/sw-scope-plugin.ts`.  An empty list (injection missing) falls
+ * back to blocking every `/images/**` navigation — fail-safe.
+ */
+const BLOCK_PATTERNS = /* @__SW_SCOPE_PATTERNS__ */ [];
+
+/** Precompiled pattern matchers. */
+const BLOCK_MATCHERS = BLOCK_PATTERNS.map((glob) => globToRegExp(glob));
 
 /** Error pages + the dependency closure needed to render them offline. */
 const PRECACHE = [
@@ -37,12 +50,18 @@ const PRECACHE = [
   "/legacy/base.css",
   "/legacy/env-detection.js",
   "/images/svg/icons/steve-hsu.svg",
-  "/images/avif/stickers/light/observing.avif",
-  "/images/avif/stickers/dark/observing.avif",
-  "/images/webp/stickers/light/observing.webp",
-  "/images/webp/stickers/dark/observing.webp",
-  "/images/png/stickers/light/observing.png",
-  "/images/png/stickers/dark/observing.png",
+  "/images/avif/stickers/light/wrong.avif",
+  "/images/avif/stickers/dark/wrong.avif",
+  "/images/webp/stickers/light/wrong.webp",
+  "/images/webp/stickers/dark/wrong.webp",
+  "/images/png/stickers/light/wrong.png",
+  "/images/png/stickers/dark/wrong.png",
+  "/images/avif/stickers/light/system-crash.avif",
+  "/images/avif/stickers/dark/system-crash.avif",
+  "/images/webp/stickers/light/system-crash.webp",
+  "/images/webp/stickers/dark/system-crash.webp",
+  "/images/png/stickers/light/system-crash.png",
+  "/images/png/stickers/dark/system-crash.png",
   "/images/png/favicons/mono-black.png",
   "/images/png/favicons/mono-white.png",
 ];
@@ -98,11 +117,12 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // 1. Direct tab navigation into /images/** → synthetic 403.
+  // 1. Direct tab navigation into a protected /images/** path → 403.
   if (
     request.mode === "navigate" &&
     url.pathname.startsWith("/images/") &&
-    !NOTICE_PATHS.has(url.pathname)
+    !NOTICE_PATHS.has(url.pathname) &&
+    isProtectedImagePath(url.pathname)
   ) {
     event.respondWith(forbiddenResponse());
     return;
@@ -179,6 +199,48 @@ async function syntheticResponse(path, status, statusText) {
  */
 function forbiddenResponse() {
   return syntheticResponse("/403.html", 403, "Forbidden");
+}
+
+/**
+ * Convert a path glob (`**` = any depth, `*` = within one segment —
+ * the syntax documented in `public/images/README.md`) to an anchored
+ * RegExp.
+ *
+ * @param {string} glob - Path glob relative to /images/.
+ * @returns {RegExp} Anchored matcher for the relative path.
+ */
+function globToRegExp(glob) {
+  let out = "^";
+  for (let i = 0; i < glob.length; i++) {
+    const ch = glob[i];
+    if (ch === "*") {
+      if (glob[i + 1] === "*") {
+        out += ".*";
+        i++;
+      } else {
+        out += "[^/]*";
+      }
+    } else if ("^$.|?*+()[]{}".includes(ch)) {
+      out += "\\" + ch;
+    } else {
+      out += ch;
+    }
+  }
+  return new RegExp(out + "$");
+}
+
+/**
+ * Does a /images/** pathname belong to the protected works?  An empty
+ * pattern list (missing injection) blocks everything — the v3.16.0
+ * blanket behaviour as a fail-safe.
+ *
+ * @param {string} pathname - Request pathname starting with /images/.
+ * @returns {boolean} True when the navigation should get the 403 page.
+ */
+function isProtectedImagePath(pathname) {
+  if (BLOCK_MATCHERS.length === 0) return true;
+  const relativePath = pathname.slice("/images/".length);
+  return BLOCK_MATCHERS.some((matcher) => matcher.test(relativePath));
 }
 
 /**
